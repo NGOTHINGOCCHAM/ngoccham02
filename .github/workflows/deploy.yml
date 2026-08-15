@@ -1,0 +1,49 @@
+# CI/CD: tự động build mỗi khi push/pull request và tự động deploy lên MonsterASP.NET khi push lên main
+name: Build và Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    # WebDeploy chỉ chạy được trên Windows
+    runs-on: windows-latest
+    env:
+      WEBSITE_NAME: ${{ secrets.WEBSITE_NAME }}
+    steps:
+      - name: Lấy source code
+        uses: actions/checkout@v7
+
+      - name: Cài đặt .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      # win-x86 theo hướng dẫn deploy của MonsterASP.NET
+      - name: Publish
+        run: dotnet publish --configuration Release --runtime win-x86 --self-contained false --output ./publish
+
+      # Không deploy với pull request; chỉ deploy khi push lên main (hoặc chạy tay) và đã khai báo secrets.
+      # Action tự dừng application pool, upload code mới rồi chạy lại để không bị khoá file .dll
+      - name: Deploy lên MonsterASP.NET qua WebDeploy
+        if: github.event_name != 'pull_request' && env.WEBSITE_NAME != ''
+        uses: rasmusbuchholdt/simply-web-deploy@2.2.0
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+
+      - name: Nhắc cấu hình secrets
+        if: github.event_name != 'pull_request' && env.WEBSITE_NAME == ''
+        run: echo "::warning::Chưa khai báo secrets WebDeploy (WEBSITE_NAME, SERVER_COMPUTER_NAME, SERVER_USERNAME, SERVER_PASSWORD) nên bỏ qua bước deploy."
