@@ -1,0 +1,86 @@
+@{
+    ViewData["Title"] = "Kiến trúc MVC";
+}
+
+<h1 class="mb-3">Kiến trúc ASP.NET Core MVC</h1>
+<p class="lead">
+    MVC (Model - View - Controller) chia ứng dụng thành 3 phần, mỗi phần một nhiệm vụ riêng,
+    giúp code dễ đọc, dễ bảo trì và dễ kiểm thử.
+</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                <h2 class="h5 card-title text-success">Model</h2>
+                <p class="card-text">Dữ liệu và quy tắc nghiệp vụ, ví dụ lớp <code>Student</code> kèm các ràng buộc kiểm tra dữ liệu.</p>
+                <p class="card-text small text-muted">Thư mục <code>Models/</code></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-primary">
+            <div class="card-body">
+                <h2 class="h5 card-title text-primary">View</h2>
+                <p class="card-text">Giao diện hiển thị cho người dùng, viết bằng Razor (<code>.cshtml</code>) = HTML + C#.</p>
+                <p class="card-text small text-muted">Thư mục <code>Views/</code></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-danger">
+            <div class="card-body">
+                <h2 class="h5 card-title text-danger">Controller</h2>
+                <p class="card-text">Nhận request, xử lý, lấy dữ liệu từ Model và chọn View để trả về.</p>
+                <p class="card-text small text-muted">Thư mục <code>Controllers/</code></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h4">Luồng xử lý một request</h2>
+<ol class="list-group list-group-numbered mb-4">
+    <li class="list-group-item"><strong>Trình duyệt</strong> gửi request, ví dụ <code>GET /Student/Details/1</code>.</li>
+    <li class="list-group-item"><strong>Middleware</strong> khai báo trong <code>Program.cs</code> lần lượt xử lý request: HTTPS, file tĩnh, routing, phân quyền...</li>
+    <li class="list-group-item"><strong>Routing</strong> phân tích URL theo mẫu <code>{controller}/{action}/{id?}</code> và chọn <code>StudentController.Details(id: 1)</code>.</li>
+    <li class="list-group-item"><strong>Controller</strong> xử lý yêu cầu, lấy dữ liệu từ <strong>Model</strong>.</li>
+    <li class="list-group-item">Controller trả về <code>View(model)</code>, <strong>View</strong> Razor kết hợp với Layout để tạo ra HTML.</li>
+    <li class="list-group-item"><strong>Response</strong> (HTML) được gửi về trình duyệt.</li>
+</ol>
+
+<h2 class="h4">Quy ước (convention) quan trọng</h2>
+<ul class="mb-4">
+    <li>Tên lớp controller kết thúc bằng <code>Controller</code> và kế thừa lớp <code>Controller</code>: <code>HomeController</code> ứng với <code>/Home</code>.</li>
+    <li>Mỗi method public trong controller là một <strong>action</strong>: <code>HomeController.Privacy()</code> ứng với <code>/Home/Privacy</code>.</li>
+    <li><code>return View()</code> tìm file <code>Views/{Controller}/{Action}.cshtml</code>, nếu không có thì tìm trong <code>Views/Shared/</code>.</li>
+    <li><code>_ViewStart.cshtml</code> chạy trước mọi view (chọn Layout), <code>_ViewImports.cshtml</code> khai báo <code>using</code> và tag helper dùng chung.</li>
+</ul>
+
+<h2 class="h4">Cấu trúc thư mục dự án</h2>
+<pre class="bg-light border rounded p-3"><code>DemoMVC/
+├── Controllers/                    Các controller (HomeController.cs, ...)
+├── Models/                         Các lớp dữ liệu (ErrorViewModel.cs, ...)
+├── Views/
+│   ├── Home/                       View của HomeController (Index.cshtml, ...)
+│   ├── Shared/                     View dùng chung (_Layout.cshtml, Error.cshtml)
+│   ├── _ViewImports.cshtml
+│   └── _ViewStart.cshtml
+├── wwwroot/                        File tĩnh: css, js, lib (bootstrap, jquery), favicon
+├── Properties/launchSettings.json  Cấu hình khi chạy (cổng, môi trường)
+├── appsettings.json                Cấu hình ứng dụng
+├── Program.cs                      Điểm khởi đầu: đăng ký service và middleware
+└── DemoMVC.csproj                  Thông tin dự án (.NET 10)</code></pre>
+
+<h2 class="h4">Program.cs</h2>
+<pre class="bg-light border rounded p-3"><code>var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews();   // 1. Đăng ký service MVC
+
+var app = builder.Build();
+app.UseHttpsRedirection();                     // 2. Cấu hình pipeline middleware
+app.UseRouting();
+app.UseAuthorization();
+app.MapStaticAssets();
+app.MapControllerRoute(                        // 3. Khai báo route mặc định
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.Run();                                     // 4. Chạy ứng dụng</code></pre>
