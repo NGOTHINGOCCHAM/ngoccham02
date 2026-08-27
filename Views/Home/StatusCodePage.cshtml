@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = $"Lỗi {ViewBag.Code}";
+}
+
+<div class="text-center py-5">
+    <p class="display-1 fw-bold text-danger">@ViewBag.Code</p>
+    <h1 class="h3">@ViewBag.Message</h1>
+    @if (ViewBag.OriginalUrl != null)
+    {
+        <p class="text-muted">Địa chỉ: <code>@ViewBag.OriginalUrl</code></p>
+    }
+    <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Về trang chủ</a>
+    <a class="btn btn-outline-secondary" asp-controller="Routing" asp-action="Index">Xem bài Định tuyến</a>
+</div>

@@ -1,0 +1,145 @@
+@{
+    ViewData["Title"] = "Định tuyến";
+}
+
+<h1 class="mb-3">Định tuyến (Routing) trong ASP.NET Core MVC</h1>
+
+<h2 class="h4 mt-4">1. Cấu trúc URL</h2>
+<p>Route mặc định được khai báo trong <code>Program.cs</code>:</p>
+<pre class="bg-light border rounded p-3"><code>app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");</code></pre>
+
+<p class="fs-5 font-monospace bg-light border rounded p-3 text-break">
+    <span class="text-secondary">http://localhost:5294</span>/<span class="text-primary fw-bold">Routing</span>/<span class="text-success fw-bold">Detail</span>/<span class="text-danger fw-bold">5</span><span class="text-warning-emphasis fw-bold">?tab=info</span>
+</p>
+
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr><th>Phần</th><th>Giá trị</th><th>Ý nghĩa</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="text-secondary fw-bold">Scheme, host, port</td>
+            <td><code>http://localhost:5294</code></td>
+            <td>Địa chỉ máy chủ</td>
+        </tr>
+        <tr>
+            <td class="text-primary fw-bold">{controller}</td>
+            <td><code>Routing</code></td>
+            <td>Gọi <code>RoutingController</code> (bỏ hậu tố "Controller"). Mặc định là <code>Home</code></td>
+        </tr>
+        <tr>
+            <td class="text-success fw-bold">{action}</td>
+            <td><code>Detail</code></td>
+            <td>Gọi method <code>Detail()</code> trong controller. Mặc định là <code>Index</code></td>
+        </tr>
+        <tr>
+            <td class="text-danger fw-bold">{id?}</td>
+            <td><code>5</code></td>
+            <td>Tham số tuỳ chọn (dấu <code>?</code>), được gán vào tham số <code>id</code> của action</td>
+        </tr>
+        <tr>
+            <td class="text-warning-emphasis fw-bold">Query string</td>
+            <td><code>?tab=info</code></td>
+            <td>Các cặp <code>key=value</code> sau dấu <code>?</code>, nối nhau bằng <code>&amp;</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Thử các URL sau:</p>
+<div class="list-group mb-4">
+    <a class="list-group-item list-group-item-action" href="~/">
+        <code>/</code> <span class="text-muted">→ Home/Index (dùng giá trị mặc định)</span>
+    </a>
+    <a class="list-group-item list-group-item-action" href="~/Routing/Detail/5">
+        <code>/Routing/Detail/5</code> <span class="text-muted">→ Routing/Detail, id = 5</span>
+    </a>
+    <a class="list-group-item list-group-item-action" href="~/Routing/Search?keyword=mvc&page=2">
+        <code>/Routing/Search?keyword=mvc&amp;page=2</code> <span class="text-muted">→ tham số lấy từ query string</span>
+    </a>
+</div>
+
+<h2 class="h4 mt-4">2. Lỗi khi truy cập URL</h2>
+<p>
+    Khi URL không khớp route nào, ứng dụng trả về mã lỗi HTTP. Dự án dùng
+    <code>app.UseStatusCodePagesWithReExecute("/Home/StatusCodePage", "?code={0}")</code>
+    để hiển thị trang báo lỗi thay vì trang trắng.
+</p>
+<table class="table table-bordered align-middle">
+    <thead class="table-light">
+        <tr><th>URL</th><th>Kết quả</th><th>Nguyên nhân</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><a href="~/KhongTonTai">/KhongTonTai</a></td>
+            <td><span class="badge text-bg-danger">404</span></td>
+            <td>Không có <code>KhongTonTaiController</code></td>
+        </tr>
+        <tr>
+            <td><a href="~/Routing/KhongCo">/Routing/KhongCo</a></td>
+            <td><span class="badge text-bg-danger">404</span></td>
+            <td>Có controller nhưng không có action <code>KhongCo</code></td>
+        </tr>
+        <tr>
+            <td><a href="~/san-pham/abc">/san-pham/abc</a></td>
+            <td><span class="badge text-bg-danger">404</span></td>
+            <td><code>abc</code> không thoả ràng buộc <code>{id:int}</code> của route</td>
+        </tr>
+        <tr>
+            <td><a href="~/san-pham/99">/san-pham/99</a></td>
+            <td><span class="badge text-bg-danger">404</span></td>
+            <td>Khớp route nhưng không có sản phẩm, action trả về <code>NotFound()</code></td>
+        </tr>
+        <tr>
+            <td><a href="~/Product/Index">/Product/Index</a></td>
+            <td><span class="badge text-bg-danger">404</span></td>
+            <td><code>ProductController</code> dùng <code>[Route]</code> nên không truy cập theo route mặc định được nữa</td>
+        </tr>
+        <tr>
+            <td><a href="~/Routing/OnlyPost">/Routing/OnlyPost</a></td>
+            <td><span class="badge text-bg-danger">405</span></td>
+            <td>
+                Action có <code>[HttpPost]</code>, còn bấm link là gửi request GET.
+                <div class="small text-muted">
+                    Chạy bằng <code>dotnet run</code> sẽ thấy 404 vì <code>MapStaticAssets()</code> thêm endpoint dự phòng
+                    <code>{**path:file}</code> cho bản build; bản publish trên hosting trả về đúng 405.
+                </div>
+                <form asp-action="OnlyPost" method="post" class="mt-2">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Gửi bằng POST</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td><a href="~/Routing/Detail/abc">/Routing/Detail/abc</a></td>
+            <td><span class="badge text-bg-warning">200</span></td>
+            <td>Không báo lỗi nhưng <code>id = 0</code>: "abc" không chuyển được sang <code>int</code>, lỗi nằm trong <code>ModelState</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 class="h4 mt-4">3. Định tuyến với [Route]</h2>
+<p>
+    Ngoài route mặc định, có thể đặt URL trực tiếp trên controller/action bằng thuộc tính
+    <code>[Route]</code> (attribute routing). URL không còn phụ thuộc vào tên controller và action.
+</p>
+<pre class="bg-light border rounded p-3"><code>[Route("san-pham")]
+public class ProductController : Controller
+{
+    [Route("")]                    // /san-pham
+    public IActionResult Index()
+
+    [Route("{id:int}")]            // /san-pham/2
+    [Route("chi-tiet/{id:int}")]   // /san-pham/chi-tiet/2
+    public IActionResult Detail(int id)
+
+    [Route("danh-muc/{category}")] // /san-pham/danh-muc/laptop
+    public IActionResult Category(string category)
+
+    [Route("/khuyen-mai")]         // /khuyen-mai (bắt đầu bằng "/" nên bỏ qua tiền tố)
+    public IActionResult Sale()
+
+    [Route("[action]")]            // /san-pham/Newest ([action] = tên action)
+    public IActionResult Newest()
+}</code></pre>
+<a class="btn btn-primary" asp-controller="Product" asp-action="Index">Xem demo /san-pham</a>

@@ -13,6 +13,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Hiển thị trang lỗi thân thiện cho các mã lỗi HTTP (404, 405, ...) thay vì trang trắng
+app.UseStatusCodePagesWithReExecute("/Home/StatusCodePage", "?code={0}");
+
 app.UseHttpsRedirection();
 app.UseRouting();
 

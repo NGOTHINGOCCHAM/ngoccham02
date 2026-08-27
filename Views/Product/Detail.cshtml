@@ -1,0 +1,23 @@
+@model Product
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Sản phẩm</a></li>
+        <li class="breadcrumb-item"><a asp-action="Category" asp-route-category="@Model.Category">@Model.Category</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<div class="card">
+    <div class="card-body">
+        <h1 class="h3 card-title">@Model.Name</h1>
+        <p class="fs-4 text-danger fw-bold">@Model.Price.ToString("N0") ₫</p>
+        <p class="mb-0 text-muted">
+            URL hiện tại: <code>@Context.Request.Path</code>.
+            Cả <code>/san-pham/@Model.Id</code> và <code>/san-pham/chi-tiet/@Model.Id</code> đều gọi tới action này.
+        </p>
+    </div>
+</div>

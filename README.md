@@ -75,3 +75,11 @@ Từ đó mỗi lần `git push` lên `main`, website tự được cập nhật
 ## Buổi 3 – Tìm hiểu kiến trúc .NET MVC
 
 Chạy ứng dụng và mở menu **Buổi 3** (`/Home/Architecture`, code ở [Views/Home/Architecture.cshtml](Views/Home/Architecture.cshtml)): vai trò của Model, View, Controller, luồng xử lý một request, các quy ước đặt tên và cấu trúc thư mục dự án.
+
+## Buổi 4 – Tìm hiểu về định tuyến trong .NET MVC
+
+| Nội dung | Code | URL demo |
+|---|---|---|
+| Cấu trúc URL `{controller}/{action}/{id?}` | [RoutingController](Controllers/RoutingController.cs) | `/Routing`, `/Routing/Detail/5`, `/Routing/Search?keyword=mvc` |
+| Lỗi khi truy cập URL (404, 405, lỗi model binding) | `UseStatusCodePagesWithReExecute` trong [Program.cs](Program.cs), action `StatusCodePage` trong [HomeController](Controllers/HomeController.cs) | Mục 2 của trang `/Routing` |
+| Định tuyến với `[Route]` | [ProductController](Controllers/ProductController.cs) | `/san-pham`, `/san-pham/2`, `/san-pham/danh-muc/laptop`, `/khuyen-mai` |
