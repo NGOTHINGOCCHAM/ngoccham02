@@ -1,0 +1,41 @@
+@model IEnumerable<Student>
+@{
+    ViewData["Title"] = "Danh sách sinh viên";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Danh sách sinh viên</h1>
+    <a class="btn btn-primary" asp-action="Create">+ Thêm sinh viên</a>
+</div>
+<p class="text-muted">
+    Controller truyền danh sách bằng <code>return View(Students)</code>,
+    View nhận qua <code>@@model IEnumerable&lt;Student&gt;</code> rồi duyệt bằng <code>@@foreach</code>.
+</p>
+
+<table class="table table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>@Html.DisplayNameFor(m => m.FullName)</th>
+            <th>@Html.DisplayNameFor(m => m.Email)</th>
+            <th>@Html.DisplayNameFor(m => m.Age)</th>
+            <th>@Html.DisplayNameFor(m => m.Major)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.Id</td>
+                <td>@s.FullName</td>
+                <td>@s.Email</td>
+                <td>@s.Age</td>
+                <td>@s.Major</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@s.Id">Chi tiết</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,31 @@
+@model Student
+@{
+    ViewData["Title"] = Model.FullName;
+}
+
+<h1 class="mb-3">Thông tin sinh viên</h1>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.FullName)</dt>
+                    <dd class="col-sm-8">@Model.FullName</dd>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Email)</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Age)</dt>
+                    <dd class="col-sm-8">@Model.Age</dd>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Major)</dt>
+                    <dd class="col-sm-8 mb-0">@Model.Major</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="text-muted">
+    View khai báo <code>@@model Student</code> nên truy cập dữ liệu theo kiểu mạnh (strongly-typed):
+    <code>@@Model.FullName</code>, được gợi ý code và kiểm tra lỗi khi biên dịch.
+</p>
+<a class="btn btn-outline-secondary" asp-action="Index">← Danh sách</a>
