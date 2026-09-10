@@ -103,3 +103,11 @@ Code ở [StateController](Controllers/StateController.cs) và [Views/State/](Vi
 | Phạm vi | Một request | Một request | Đến khi được đọc, giữ được qua redirect |
 
 ViewBag và ViewData dùng chung một kho dữ liệu. TempData bị xoá sau khi đọc, trừ khi gọi `Keep()` hoặc đọc bằng `Peek()`.
+
+## Buổi 7 – Tìm hiểu về Layout
+
+Tóm tắt trên website: menu **Buổi 7** (`/Home/LayoutDemo`).
+
+- Layout dùng chung: [Views/Shared/_Layout.cshtml](Views/Shared/_Layout.cshtml), được chọn trong [Views/_ViewStart.cshtml](Views/_ViewStart.cshtml). Menu chia theo từng buổi học, dùng navbar và dropdown của Bootstrap.
+- **Tích hợp Bootstrap 5** (5.3.3, nằm trong [wwwroot/lib/bootstrap](wwwroot/lib/bootstrap)): nhúng `bootstrap.min.css` trong `<head>` và `bootstrap.bundle.min.js` cuối `<body>` của Layout.
+- **Tách file CSS và tích hợp vào Layout**: CSS của Layout (header, menu, footer) nằm ở [wwwroot/css/layout.css](wwwroot/css/layout.css), được nhúng vào Layout bằng thẻ `<link>`. Trang chủ có CSS riêng [wwwroot/css/home.css](wwwroot/css/home.css), nhúng qua `@section Styles` (Layout gọi `RenderSectionAsync("Styles")`).

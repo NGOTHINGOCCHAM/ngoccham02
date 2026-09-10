@@ -1,71 +1,85 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DemoMVC</title>
     <script type="importmap"></script>
+    @* Bootstrap 5 nằm trong wwwroot/lib/bootstrap *@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/DemoMVC.styles.css" asp-append-version="true" />
+    @* CSS riêng của Layout, tách ra file wwwroot/css/layout.css *@
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    @* Mỗi trang có thể nhúng thêm file CSS của riêng nó qua section "Styles" *@
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
+    @{
+        var controller = ViewContext.RouteData.Values["controller"] as string;
+        var action = ViewContext.RouteData.Values["action"] as string;
+        string Active(string c, string? a = null) => c == controller && (a == null || a == action) ? "active" : "";
+    }
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DemoMVC</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg bg-primary shadow-sm mb-4" data-bs-theme="dark">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">DemoMVC</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Mở menu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link @Active("Home", "Index")" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Environment" title="Tìm hiểu về môi trường lập trình">Buổi 1</a>
+                            <a class="nav-link @Active("Home", "Environment")" asp-controller="Home" asp-action="Environment" title="Tìm hiểu về môi trường lập trình">Buổi 1</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CiCd" title="Tìm hiểu về CI/CD">Buổi 2</a>
+                            <a class="nav-link @Active("Home", "CiCd")" asp-controller="Home" asp-action="CiCd" title="Tìm hiểu về CI/CD">Buổi 2</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Architecture" title="Tìm hiểu về kiến trúc .NET MVC">Buổi 3</a>
+                            <a class="nav-link @Active("Home", "Architecture")" asp-controller="Home" asp-action="Architecture" title="Tìm hiểu về kiến trúc .NET MVC">Buổi 3</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Tìm hiểu về định tuyến trong .NET MVC">Buổi 4</a>
+                            <a class="nav-link dropdown-toggle @Active("Routing")@Active("Product")" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">Buổi 4</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Routing" asp-action="Index">Cấu trúc URL và lỗi</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Product" asp-action="Index">Định tuyến với [Route]</a></li>
+                                <li><h6 class="dropdown-header">Định tuyến trong .NET MVC</h6></li>
+                                <li><a class="dropdown-item" asp-controller="Routing" asp-action="Index">Cấu trúc URL và lỗi</a></li>
+                                <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">Định tuyến với [Route]</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Tìm hiểu về gửi nhận dữ liệu giữa M-V-C">Buổi 5</a>
+                            <a class="nav-link dropdown-toggle @Active("Data")@Active("Student")" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">Buổi 5</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Data" asp-action="Index">Controller ↔ View</a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Student" asp-action="Index">Thông qua Model</a></li>
+                                <li><h6 class="dropdown-header">Gửi nhận dữ liệu giữa M-V-C</h6></li>
+                                <li><a class="dropdown-item" asp-controller="Data" asp-action="Index">Controller ↔ View</a></li>
+                                <li><a class="dropdown-item" asp-controller="Student" asp-action="Index">Thông qua Model</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="State" asp-action="Index" title="Tìm hiểu về quản lý trạng thái">Buổi 6</a>
+                            <a class="nav-link @Active("State")" asp-controller="State" asp-action="Index" title="Tìm hiểu về quản lý trạng thái">Buổi 6</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link @Active("Home", "LayoutDemo")" asp-controller="Home" asp-action="LayoutDemo" title="Tìm hiểu về Layout">Buổi 7</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer border-top text-muted">
         <div class="container">
-            &copy; 2026 - DemoMVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - DemoMVC - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

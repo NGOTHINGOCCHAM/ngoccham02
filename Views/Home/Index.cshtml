@@ -1,8 +1,104 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+<section class="hero rounded-4 p-4 p-md-5 mb-4">
+    <h1 class="display-6 fw-bold">Thực hành ASP.NET Core MVC</h1>
+    <p class="lead mb-0">
+        Môi trường, CI/CD, kiến trúc MVC, định tuyến, gửi nhận dữ liệu, quản lý trạng thái và Layout.
+    </p>
+</section>
+
+<div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card topic-card h-100">
+            <div class="card-body">
+                <span class="badge rounded-pill text-bg-primary mb-2">Buổi 1</span>
+                <h2 class="h5 card-title">Môi trường lập trình</h2>
+                <p class="card-text text-muted">.NET 10 SDK, VS Code và extension C# Dev Kit.</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <a class="btn btn-sm btn-outline-primary" asp-action="Environment">Xem</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card topic-card h-100">
+            <div class="card-body">
+                <span class="badge rounded-pill text-bg-primary mb-2">Buổi 2</span>
+                <h2 class="h5 card-title">CI/CD</h2>
+                <p class="card-text text-muted">GitHub Actions tự động build và deploy lên MonsterASP.NET mỗi khi push lên nhánh main.</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <a class="btn btn-sm btn-outline-primary" asp-action="CiCd">Xem</a>
+                <a class="btn btn-sm btn-outline-secondary" href="https://github.com/NGOTHINGOCCHAM/ngoccham02/actions" target="_blank" rel="noopener">GitHub Actions</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card topic-card h-100">
+            <div class="card-body">
+                <span class="badge rounded-pill text-bg-primary mb-2">Buổi 3</span>
+                <h2 class="h5 card-title">Kiến trúc .NET MVC</h2>
+                <p class="card-text text-muted">Vai trò Model, View, Controller và luồng xử lý một request.</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <a class="btn btn-sm btn-outline-primary" asp-action="Architecture">Xem</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card topic-card h-100">
+            <div class="card-body">
+                <span class="badge rounded-pill text-bg-primary mb-2">Buổi 4</span>
+                <h2 class="h5 card-title">Định tuyến</h2>
+                <p class="card-text text-muted">Cấu trúc URL, lỗi khi truy cập URL và định tuyến với <code>[Route]</code>.</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Routing" asp-action="Index">Cấu trúc URL</a>
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Product" asp-action="Index">[Route]</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card topic-card h-100">
+            <div class="card-body">
+                <span class="badge rounded-pill text-bg-primary mb-2">Buổi 5</span>
+                <h2 class="h5 card-title">Gửi nhận dữ liệu M-V-C</h2>
+                <p class="card-text text-muted">Giữa Controller và View, và thông qua Model.</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Data" asp-action="Index">Controller ↔ View</a>
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Student" asp-action="Index">Model</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card topic-card h-100">
+            <div class="card-body">
+                <span class="badge rounded-pill text-bg-primary mb-2">Buổi 6</span>
+                <h2 class="h5 card-title">Quản lý trạng thái</h2>
+                <p class="card-text text-muted">ViewBag, ViewData và TempData.</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <a class="btn btn-sm btn-outline-primary" asp-controller="State" asp-action="Index">Xem</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card topic-card h-100">
+            <div class="card-body">
+                <span class="badge rounded-pill text-bg-primary mb-2">Buổi 7</span>
+                <h2 class="h5 card-title">Layout</h2>
+                <p class="card-text text-muted">Tích hợp Bootstrap 5, tách file CSS và nhúng vào Layout.</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <a class="btn btn-sm btn-outline-primary" asp-action="LayoutDemo">Xem</a>
+            </div>
+        </div>
+    </div>
 </div>
