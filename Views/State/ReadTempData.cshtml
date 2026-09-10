@@ -1,0 +1,64 @@
+@{
+    ViewData["Title"] = "Đọc TempData";
+}
+
+<h1 class="mb-3">Đọc TempData sau khi redirect</h1>
+
+<table class="table table-bordered align-middle">
+    <thead class="table-light">
+        <tr><th>Dữ liệu</th><th>Giá trị đọc được ở request này</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>TempData["Notice"]</code></td>
+            <td>
+                @if (ViewBag.FromTempData != null)
+                {
+                    <span class="text-success fw-semibold">@ViewBag.FromTempData</span>
+                }
+                else
+                {
+                    <span class="text-danger">null: chưa tạo hoặc đã bị xoá sau lần đọc trước</span>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td><code>ViewBag.Notice</code> (gán trước khi redirect)</td>
+            <td>
+                @if (ViewBag.Notice != null)
+                {
+                    <span class="text-success fw-semibold">@ViewBag.Notice</span>
+                }
+                else
+                {
+                    <span class="text-danger">null: ViewBag không giữ được qua redirect</span>
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+@if (ViewBag.FromTempData != null)
+{
+    <div class="alert @(ViewBag.Kept ? "alert-info" : "alert-warning")">
+        @if (ViewBag.Kept)
+        {
+            <text>Đã gọi <code>TempData.Keep("Notice")</code> nên tải lại trang vẫn còn giá trị (thêm một lần nữa).</text>
+        }
+        else
+        {
+            <text>TempData vừa được đọc nên sẽ bị xoá ở cuối request này. Tải lại trang để kiểm tra.</text>
+        }
+    </div>
+}
+
+<p class="text-muted">
+    <code>Keep()</code> giữ lại giá trị cho request kế tiếp, còn <code>TempData.Peek("Notice")</code>
+    đọc giá trị mà không đánh dấu xoá.
+</p>
+
+<div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-primary" asp-action="ReadTempData">Tải lại trang</a>
+    <a class="btn btn-primary" asp-action="SendTempData">Tạo TempData mới</a>
+    <a class="btn btn-outline-secondary" asp-action="Index">← Quay lại</a>
+</div>
