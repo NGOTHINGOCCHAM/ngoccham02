@@ -6,11 +6,11 @@ namespace DemoMVC.Controllers;
 // Định tuyến bằng thuộc tính [Route]: URL được khai báo trực tiếp trên controller/action,
 // không phụ thuộc vào tên class hay tên method.
 // Khi controller đã có [Route] thì route mặc định "{controller}/{action}/{id?}" không còn áp dụng,
-// nên /Product/Index sẽ trả về 404.
+// nên /Catalog/Index sẽ trả về 404.
 [Route("san-pham")]
-public class ProductController : Controller
+public class CatalogController : Controller
 {
-    private static readonly List<Product> Products =
+    private static readonly List<CatalogItem> Items =
     [
         new() { Id = 1, Name = "Laptop Dell Inspiron 15", Category = "laptop", Price = 15990000 },
         new() { Id = 2, Name = "MacBook Air M3", Category = "laptop", Price = 27490000, OnSale = true },
@@ -24,7 +24,7 @@ public class ProductController : Controller
     public IActionResult Index()
     {
         ViewData["Heading"] = "Tất cả sản phẩm";
-        return View(Products);
+        return View(Items);
     }
 
     // Một action có thể có nhiều route: /san-pham/2 hoặc /san-pham/chi-tiet/2
@@ -33,13 +33,13 @@ public class ProductController : Controller
     [Route("chi-tiet/{id:int}")]
     public IActionResult Detail(int id)
     {
-        var product = Products.FirstOrDefault(p => p.Id == id);
-        if (product == null)
+        var item = Items.FirstOrDefault(p => p.Id == id);
+        if (item == null)
         {
             // Khớp route nhưng không có dữ liệu -> chủ động trả về 404
             return NotFound();
         }
-        return View(product);
+        return View(item);
     }
 
     // URL: /san-pham/danh-muc/laptop -> category = "laptop"
@@ -47,7 +47,7 @@ public class ProductController : Controller
     public IActionResult Category(string category)
     {
         ViewData["Heading"] = $"Danh mục: {category}";
-        return View("Index", Products.Where(p => p.Category == category).ToList());
+        return View("Index", Items.Where(p => p.Category == category).ToList());
     }
 
     // Route bắt đầu bằng "/" sẽ bỏ qua tiền tố "san-pham" của controller. URL: /khuyen-mai
@@ -55,7 +55,7 @@ public class ProductController : Controller
     public IActionResult Sale()
     {
         ViewData["Heading"] = "Sản phẩm khuyến mãi";
-        return View("Index", Products.Where(p => p.OnSale).ToList());
+        return View("Index", Items.Where(p => p.OnSale).ToList());
     }
 
     // Token [action] được thay bằng tên action. URL: /san-pham/Newest
@@ -63,6 +63,6 @@ public class ProductController : Controller
     public IActionResult Newest()
     {
         ViewData["Heading"] = "Sản phẩm mới nhất";
-        return View("Index", Products.OrderByDescending(p => p.Id).Take(3).ToList());
+        return View("Index", Items.OrderByDescending(p => p.Id).Take(3).ToList());
     }
 }

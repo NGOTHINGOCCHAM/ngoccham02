@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using DemoMVC.Data;
 using DemoMVC.Models;
 
 namespace DemoMVC.Controllers;
@@ -29,6 +31,34 @@ public class HomeController : Controller
 
     public IActionResult LayoutDemo()
     {
+        return View();
+    }
+
+    // Kiểm tra kết nối CSDL: kết nối được không, đã chạy những migration nào, bảng Products có bao nhiêu dòng
+    public async Task<IActionResult> Database([FromServices] ApplicationDbContext db, [FromServices] IWebHostEnvironment env)
+    {
+        bool canConnect = false;
+        try
+        {
+            canConnect = await db.Database.CanConnectAsync();
+            if (canConnect)
+            {
+                var pending = (await db.Database.GetPendingMigrationsAsync()).ToList();
+                ViewBag.AppliedMigrations = (await db.Database.GetAppliedMigrationsAsync()).ToList();
+                ViewBag.PendingMigrations = pending;
+                if (pending.Count == 0)
+                {
+                    ViewBag.ProductCount = await db.Products.CountAsync();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Chỉ hiện chi tiết lỗi khi chạy trên máy (Development), không lộ thông tin trên hosting
+            ViewBag.Error = env.IsDevelopment() ? ex.Message : null;
+        }
+        ViewBag.CanConnect = canConnect;
+        ViewBag.EnvironmentName = env.EnvironmentName;
         return View();
     }
 

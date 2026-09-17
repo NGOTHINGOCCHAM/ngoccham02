@@ -92,9 +92,9 @@
             <td>Khớp route nhưng không có sản phẩm, action trả về <code>NotFound()</code></td>
         </tr>
         <tr>
-            <td><a href="~/Product/Index">/Product/Index</a></td>
+            <td><a href="~/Catalog/Index">/Catalog/Index</a></td>
             <td><span class="badge text-bg-danger">404</span></td>
-            <td><code>ProductController</code> dùng <code>[Route]</code> nên không truy cập theo route mặc định được nữa</td>
+            <td><code>CatalogController</code> dùng <code>[Route]</code> nên không truy cập theo route mặc định được nữa</td>
         </tr>
         <tr>
             <td><a href="~/Routing/OnlyPost">/Routing/OnlyPost</a></td>
@@ -124,7 +124,7 @@
     <code>[Route]</code> (attribute routing). URL không còn phụ thuộc vào tên controller và action.
 </p>
 <pre class="bg-light border rounded p-3"><code>[Route("san-pham")]
-public class ProductController : Controller
+public class CatalogController : Controller
 {
     [Route("")]                    // /san-pham
     public IActionResult Index()
@@ -142,4 +142,4 @@ public class ProductController : Controller
     [Route("[action]")]            // /san-pham/Newest ([action] = tên action)
     public IActionResult Newest()
 }</code></pre>
-<a class="btn btn-primary" asp-controller="Product" asp-action="Index">Xem demo /san-pham</a>
+<a class="btn btn-primary" asp-controller="Catalog" asp-action="Index">Xem demo /san-pham</a>

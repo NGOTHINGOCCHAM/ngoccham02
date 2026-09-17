@@ -1,7 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+using DemoMVC.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Đăng ký DbContext dùng SQL Server với chuỗi kết nối "DefaultConnection" trong appsettings.json
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 

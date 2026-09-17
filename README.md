@@ -82,7 +82,7 @@ Chạy ứng dụng và mở menu **Buổi 3** (`/Home/Architecture`, code ở [
 |---|---|---|
 | Cấu trúc URL `{controller}/{action}/{id?}` | [RoutingController](Controllers/RoutingController.cs) | `/Routing`, `/Routing/Detail/5`, `/Routing/Search?keyword=mvc` |
 | Lỗi khi truy cập URL (404, 405, lỗi model binding) | `UseStatusCodePagesWithReExecute` trong [Program.cs](Program.cs), action `StatusCodePage` trong [HomeController](Controllers/HomeController.cs) | Mục 2 của trang `/Routing` |
-| Định tuyến với `[Route]` | [ProductController](Controllers/ProductController.cs) | `/san-pham`, `/san-pham/2`, `/san-pham/danh-muc/laptop`, `/khuyen-mai` |
+| Định tuyến với `[Route]` | [CatalogController](Controllers/CatalogController.cs) | `/san-pham`, `/san-pham/2`, `/san-pham/danh-muc/laptop`, `/khuyen-mai` |
 
 ## Buổi 5 – Tìm hiểu về gửi nhận dữ liệu giữa M-V-C
 
@@ -111,3 +111,21 @@ Tóm tắt trên website: menu **Buổi 7** (`/Home/LayoutDemo`).
 - Layout dùng chung: [Views/Shared/_Layout.cshtml](Views/Shared/_Layout.cshtml), được chọn trong [Views/_ViewStart.cshtml](Views/_ViewStart.cshtml). Menu chia theo từng buổi học, dùng navbar và dropdown của Bootstrap.
 - **Tích hợp Bootstrap 5** (5.3.3, nằm trong [wwwroot/lib/bootstrap](wwwroot/lib/bootstrap)): nhúng `bootstrap.min.css` trong `<head>` và `bootstrap.bundle.min.js` cuối `<body>` của Layout.
 - **Tách file CSS và tích hợp vào Layout**: CSS của Layout (header, menu, footer) nằm ở [wwwroot/css/layout.css](wwwroot/css/layout.css), được nhúng vào Layout bằng thẻ `<link>`. Trang chủ có CSS riêng [wwwroot/css/home.css](wwwroot/css/home.css), nhúng qua `@section Styles` (Layout gọi `RenderSectionAsync("Styles")`).
+
+## Buổi 8 (16/9) – Kết nối cơ sở dữ liệu
+
+Tóm tắt trên website: menu **Buổi 8** (`/Home/Database`), có hiển thị trạng thái kết nối CSDL.
+
+1. Package cùng phiên bản với .NET: `Microsoft.EntityFrameworkCore.SqlServer` và `Microsoft.EntityFrameworkCore.Tools` (10.0.13). Công cụ dòng lệnh: `dotnet tool install -g dotnet-ef`.
+2. Model [Product](Models/Product.cs) gồm `Id`, `Name`, `Price`, `CreatedAt`. [ApplicationDbContext](Data/ApplicationDbContext.cs) có `DbSet<Product>`, `Price` đặt `HasPrecision(18, 2)`.
+3. Chuỗi kết nối `DefaultConnection` trong [appsettings.json](appsettings.json), đăng ký `AddDbContext` + `UseSqlServer` trong [Program.cs](Program.cs).
+4. Tạo bảng: `dotnet ef migrations add InitialCreate` rồi `dotnet ef database update` (code migration nằm trong [Migrations/](Migrations/)).
+
+Chuỗi kết nối mặc định dùng LocalDB, chỉ chạy trên Windows. Trên macOS/Linux, trỏ tới SQL Server khác bằng user-secrets (không ghi mật khẩu vào code):
+
+```bash
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=...;Database=...;User Id=...;Password=...;TrustServerCertificate=True"
+dotnet ef database update
+```
+
+Demo định tuyến `[Route]` của buổi 4 được đổi tên thành `CatalogController` (URL `/san-pham` giữ nguyên) để dành tên `Product` cho bài này.
