@@ -57,7 +57,9 @@ public class ProductController : Controller
             return View(product);
         }
 
-        product.CreatedAt = DateTime.Now;
+        // Máy chủ hosting đặt ở châu Âu nên DateTime.Now lệch giờ Việt Nam.
+        // Việt Nam là UTC+7 quanh năm (không có giờ mùa hè) nên lấy giờ UTC cộng 7 tiếng
+        product.CreatedAt = DateTime.UtcNow.AddHours(7);
         _context.Add(product);
         await _context.SaveChangesAsync();
 
