@@ -1,0 +1,30 @@
+@model Product
+@{
+    ViewData["Title"] = "Xoá sản phẩm";
+}
+
+<h1 class="mb-3">Xoá sản phẩm</h1>
+<div class="alert alert-warning">Bạn có chắc muốn xoá sản phẩm này?</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Name)</dt>
+                    <dd class="col-sm-8">@Model.Name</dd>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Price)</dt>
+                    <dd class="col-sm-8">@Model.Price.ToString("#,##0.##") ₫</dd>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+                    <dd class="col-sm-8 mb-0">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Xoá</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">Huỷ</a>
+</form>

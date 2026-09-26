@@ -129,3 +129,25 @@ dotnet ef database update
 ```
 
 Demo định tuyến `[Route]` của buổi 4 được đổi tên thành `CatalogController` (URL `/san-pham` giữ nguyên) để dành tên `Product` cho bài này.
+
+## Buổi 9 (30/9) – CRUD, Validation và CSDL trên hosting
+
+Trên website: menu **Buổi 9** → **Sản phẩm** (`/Product`) và **CSDL trên hosting** (`/Home/DatabaseHosting`).
+
+### CRUD và Validation
+
+- [ProductController](Controllers/ProductController.cs) có đủ `Index`, `Details`, `Create`, `Edit`, `Delete`, dùng EF async. Các action POST có `[ValidateAntiForgeryToken]` và kiểm tra `ModelState.IsValid`.
+- 5 view trong [Views/Product/](Views/Product/). `Create` và `Edit` có `asp-validation-for` và `_ValidationScriptsPartial`. `Edit` có 2 ô ẩn `Id` và `CreatedAt`.
+- Data Annotations trên [Product](Models/Product.cs), thông báo lỗi tiếng Việt: `Name` có `[Required]` và `[StringLength(100)]`; `Price` có `[Required]` và `[Range(0.01, 1000000000)]`.
+- Migration `ProductNameMaxLength` giới hạn cột `Name` còn 100 ký tự trong CSDL.
+
+### CSDL trên hosting
+
+- [Program.cs](Program.cs) gọi `Database.Migrate()` khi ứng dụng khởi động, bọc trong `try/catch`, lỗi chỉ ghi log. Cần làm vậy vì hosting không chạy được `dotnet ef database update`.
+- Workflow tạo `appsettings.Production.json` từ secret `DB_CONNECTION_STRING`. Repo để public nên không commit mật khẩu vào code (file này nằm trong `.gitignore`).
+
+Cấu hình: Control Panel MonsterASP → **Databases** → tạo database MSSQL và copy connection string, rồi thêm vào GitHub secret:
+
+| Secret | Giá trị |
+|---|---|
+| `DB_CONNECTION_STRING` | Connection string của database trên MonsterASP |

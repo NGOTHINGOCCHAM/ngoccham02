@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Chứa chuỗi kết nối CSDL thật, được workflow tạo từ secret DB_CONNECTION_STRING
+appsettings.Production.json

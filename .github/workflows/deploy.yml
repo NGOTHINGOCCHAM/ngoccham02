@@ -14,6 +14,7 @@ jobs:
     runs-on: windows-latest
     env:
       WEBSITE_NAME: ${{ secrets.WEBSITE_NAME }}
+      HAS_DB_CONNECTION: ${{ secrets.DB_CONNECTION_STRING != '' }}
     steps:
       - name: Lấy source code
         uses: actions/checkout@v7
@@ -32,6 +33,22 @@ jobs:
       # win-x86 theo hướng dẫn deploy của MonsterASP.NET
       - name: Publish
         run: dotnet publish --configuration Release --runtime win-x86 --self-contained false --output ./publish
+
+      # Repo để public nên không commit mật khẩu CSDL: tạo appsettings.Production.json từ secret DB_CONNECTION_STRING.
+      # Trên hosting app chạy ở môi trường Production nên file này ghi đè DefaultConnection trong appsettings.json
+      - name: Tạo appsettings.Production.json
+        if: env.HAS_DB_CONNECTION == 'true'
+        shell: pwsh
+        env:
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          @{ ConnectionStrings = @{ DefaultConnection = $env:DB_CONNECTION_STRING } } |
+            ConvertTo-Json |
+            Set-Content -Path ./publish/appsettings.Production.json -Encoding utf8
+
+      - name: Nhắc cấu hình secret CSDL
+        if: env.HAS_DB_CONNECTION != 'true'
+        run: echo "::warning::Chưa khai báo secret DB_CONNECTION_STRING nên website trên hosting chưa kết nối được CSDL."
 
       # Không deploy với pull request; chỉ deploy khi push lên main (hoặc chạy tay) và đã khai báo secrets.
       # Action tự dừng application pool, upload code mới rồi chạy lại để không bị khoá file .dll
