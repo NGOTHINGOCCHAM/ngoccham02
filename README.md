@@ -71,3 +71,7 @@ Thư mục `bin/`, `obj/` là kết quả build nên được loại khỏi git 
 | `SERVER_PASSWORD` | Password của WebDeploy |
 
 Từ đó mỗi lần `git push` lên `main`, website tự được cập nhật. Theo dõi tiến trình ở tab **Actions** của repo.
+
+## Buổi 3 – Tìm hiểu kiến trúc .NET MVC
+
+Chạy ứng dụng và mở menu **Buổi 3** (`/Home/Architecture`, code ở [Views/Home/Architecture.cshtml](Views/Home/Architecture.cshtml)): vai trò của Model, View, Controller, luồng xử lý một request, các quy ước đặt tên và cấu trúc thư mục dự án.
