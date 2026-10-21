@@ -1,0 +1,54 @@
+@model Student
+@{
+    ViewData["Title"] = "Thêm sinh viên";
+}
+
+<h1 class="mb-3">Thêm sinh viên</h1>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Age" class="form-label"></label>
+                <input asp-for="Age" class="form-control" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Major" class="form-label"></label>
+                <input asp-for="Major" class="form-control" />
+                <span asp-validation-for="Major" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Huỷ</a>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <div class="alert alert-info mb-0">
+            <h2 class="h6">Model binding</h2>
+            <p>
+                Tag helper <code>asp-for="FullName"</code> sinh ra <code>&lt;input name="FullName"&gt;</code>.
+                Khi gửi form, ASP.NET Core tự gán các giá trị vào đối tượng <code>Student</code>
+                trong action <code>Create(Student student)</code>.
+            </p>
+            <p class="mb-0">
+                Các thuộc tính <code>[Required]</code>, <code>[EmailAddress]</code>, <code>[Range]</code> trong Model
+                được kiểm tra ở cả trình duyệt (jQuery Validation) và máy chủ (<code>ModelState.IsValid</code>).
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

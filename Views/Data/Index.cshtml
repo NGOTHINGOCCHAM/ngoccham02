@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Controller ↔ View";
+}
+
+<h1 class="mb-3">Gửi nhận dữ liệu giữa Controller và View</h1>
+
+<div class="alert alert-info">
+    <strong>Controller → View:</strong> giờ máy chủ là <code>@ViewBag.ServerTime</code>.
+    Giá trị này được gán trong controller bằng <code>ViewBag.ServerTime = ...</code>
+    và hiển thị trong View bằng <code>@@ViewBag.ServerTime</code>.
+</div>
+
+@if (ViewBag.Result != null)
+{
+    <div class="alert alert-success">
+        <strong>Kết quả Controller trả về:</strong> @ViewBag.Result
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">View → Controller bằng form (POST)</div>
+            <div class="card-body">
+                <form asp-action="Index" method="post">
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label">Họ và tên</label>
+                        <input id="fullName" name="fullName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="birthYear" class="form-label">Năm sinh</label>
+                        <input id="birthYear" name="birthYear" type="number" min="1900" max="@DateTime.Now.Year" class="form-control" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Gửi</button>
+                </form>
+                <p class="small text-muted mt-3 mb-0">
+                    Thuộc tính <code>name</code> của input trùng với tên tham số của action:
+                    <code>Index(string? fullName, int birthYear)</code>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">View → Controller bằng query string (GET)</div>
+            <div class="card-body">
+                <form asp-action="Hello" method="get">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Tên</label>
+                        <input id="name" name="name" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary">Gửi</button>
+                </form>
+                <p class="small text-muted mt-3 mb-0">
+                    Form GET đưa dữ liệu lên URL dạng <code>/Data/Hello?name=...</code>.
+                    Có thể gõ thẳng URL: <a href="~/Data/Hello?name=An">/Data/Hello?name=An</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -83,3 +83,11 @@ Chạy ứng dụng và mở menu **Buổi 3** (`/Home/Architecture`, code ở [
 | Cấu trúc URL `{controller}/{action}/{id?}` | [RoutingController](Controllers/RoutingController.cs) | `/Routing`, `/Routing/Detail/5`, `/Routing/Search?keyword=mvc` |
 | Lỗi khi truy cập URL (404, 405, lỗi model binding) | `UseStatusCodePagesWithReExecute` trong [Program.cs](Program.cs), action `StatusCodePage` trong [HomeController](Controllers/HomeController.cs) | Mục 2 của trang `/Routing` |
 | Định tuyến với `[Route]` | [ProductController](Controllers/ProductController.cs) | `/san-pham`, `/san-pham/2`, `/san-pham/danh-muc/laptop`, `/khuyen-mai` |
+
+## Buổi 5 – Tìm hiểu về gửi nhận dữ liệu giữa M-V-C
+
+| Nội dung | Code | URL demo |
+|---|---|---|
+| Controller, View, Model | [Controllers/](Controllers/), [Views/](Views/), [Models/](Models/) | |
+| Gửi nhận dữ liệu giữa Controller và View: `ViewBag`, tham số action, form POST, query string | [DataController](Controllers/DataController.cs), [Views/Data/Index.cshtml](Views/Data/Index.cshtml) | `/Data`, `/Data/Hello?name=An` |
+| Gửi nhận dữ liệu qua Model: strongly-typed view, model binding, kiểm tra dữ liệu bằng Data Annotations | [Student](Models/Student.cs), [StudentController](Controllers/StudentController.cs), [Views/Student/](Views/Student/) | `/Student`, `/Student/Create` |
