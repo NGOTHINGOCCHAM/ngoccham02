@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Buổi 2 - CI/CD";
+}
+
+<h1 class="mb-3">Buổi 2: Tìm hiểu về CI/CD</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100 border-primary">
+            <div class="card-body">
+                <h2 class="h5 card-title text-primary">CI – Continuous Integration</h2>
+                <p class="card-text">Tích hợp liên tục: mỗi lần push code, hệ thống tự động build để phát hiện lỗi sớm.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                <h2 class="h5 card-title text-success">CD – Continuous Deployment</h2>
+                <p class="card-text">Triển khai liên tục: build thành công thì tự động đưa phiên bản mới lên hosting.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h4">Quy trình của dự án</h2>
+<ol class="list-group list-group-numbered mb-4">
+    <li class="list-group-item"><code>git push</code> code lên nhánh <code>main</code> trên GitHub.</li>
+    <li class="list-group-item">GitHub Actions chạy workflow <code>.github/workflows/deploy.yml</code> trên máy ảo Windows.</li>
+    <li class="list-group-item">Cài .NET 10 → <code>dotnet restore</code> → <code>dotnet build</code> → <code>dotnet publish</code>.</li>
+    <li class="list-group-item">Upload bản publish lên hosting MonsterASP.NET bằng WebDeploy.</li>
+    <li class="list-group-item">Website <a href="https://ngoccham.runasp.net" target="_blank" rel="noopener">ngoccham.runasp.net</a> được cập nhật.</li>
+</ol>
+
+<h2 class="h4">Hosting và domain</h2>
+<table class="table table-bordered">
+    <tbody>
+        <tr><th class="w-25">Hosting</th><td>MonsterASP.NET, gói miễn phí, hỗ trợ ASP.NET Core</td></tr>
+        <tr><th>Domain</th><td><code>ngoccham.runasp.net</code>, tên miền phụ miễn phí do hosting cấp</td></tr>
+        <tr><th>Cách deploy</th><td>WebDeploy, thông tin đăng nhập lưu trong GitHub Secrets (không ghi trong code)</td></tr>
+    </tbody>
+</table>
+
+<a class="btn btn-primary" href="https://github.com/NGOTHINGOCCHAM/ngoccham02/actions" target="_blank" rel="noopener">Xem các lần chạy trên GitHub Actions</a>
