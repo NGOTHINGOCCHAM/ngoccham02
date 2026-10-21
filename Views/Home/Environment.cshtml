@@ -1,0 +1,63 @@
+@{
+    ViewData["Title"] = "Buổi 1 - Môi trường lập trình";
+}
+
+<h1 class="mb-3">Buổi 1: Tìm hiểu môi trường lập trình</h1>
+<p class="lead">
+    Ứng dụng này đang chạy trên <strong>@System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</strong>.
+</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title">.NET SDK 10</h2>
+                <p class="card-text">Bộ công cụ để tạo, build và chạy ứng dụng .NET, gồm cả runtime và lệnh <code>dotnet</code>.</p>
+                <a class="card-link" href="https://dotnet.microsoft.com/download" target="_blank" rel="noopener">Tải .NET SDK</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title">Visual Studio Code</h2>
+                <p class="card-text">Trình soạn thảo code miễn phí, nhẹ, chạy trên Windows, macOS và Linux.</p>
+                <a class="card-link" href="https://code.visualstudio.com" target="_blank" rel="noopener">Tải VS Code</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title">Extensions</h2>
+                <p class="card-text">
+                    <strong>C# Dev Kit</strong> (<code>ms-dotnettools.csdevkit</code>): gợi ý code, chạy và debug.
+                    Khi cài sẽ tự cài kèm <strong>C#</strong> và <strong>.NET Install Tool</strong>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h4">Các bước cài đặt</h2>
+<ol class="mb-4">
+    <li>Cài .NET SDK 10, mở terminal gõ <code>dotnet --version</code> để kiểm tra.</li>
+    <li>Cài VS Code.</li>
+    <li>Trong VS Code mở tab Extensions (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>, trên macOS là <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>), tìm và cài <strong>C# Dev Kit</strong>.</li>
+    <li>Mở thư mục dự án. File <code>.vscode/extensions.json</code> khai báo sẵn extension nên VS Code sẽ gợi ý cài nếu còn thiếu.</li>
+</ol>
+
+<h2 class="h4">Các lệnh dotnet thường dùng</h2>
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr><th>Lệnh</th><th>Ý nghĩa</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><code>dotnet new mvc -n DemoMVC</code></td><td>Tạo dự án MVC mới</td></tr>
+        <tr><td><code>dotnet restore</code></td><td>Tải các package</td></tr>
+        <tr><td><code>dotnet build</code></td><td>Biên dịch</td></tr>
+        <tr><td><code>dotnet run</code></td><td>Chạy ứng dụng</td></tr>
+        <tr><td><code>dotnet watch</code></td><td>Chạy và tự tải lại khi sửa code</td></tr>
+        <tr><td><code>dotnet publish -c Release -o ./publish</code></td><td>Đóng gói để triển khai</td></tr>
+    </tbody>
+</table>
