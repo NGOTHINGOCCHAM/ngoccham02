@@ -1,0 +1,40 @@
+/* CSS dùng chung cho Layout (Views/Shared/_Layout.cshtml).
+   File được nhúng vào Layout bằng thẻ <link> nên mọi trang dùng Layout đều được áp dụng. */
+
+/* Header */
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: .03em;
+}
+
+.navbar .nav-link.active {
+  font-weight: 600;
+}
+
+.navbar .dropdown-menu {
+  border: 0;
+  box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+}
+
+/* Nội dung */
+main h1 {
+  font-weight: 700;
+}
+
+pre code {
+  font-size: .875rem;
+}
+
+/* Footer luôn nằm cuối trang (body có margin-bottom bằng chiều cao footer trong site.css) */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+  background-color: var(--bs-tertiary-bg);
+}
+
+.footer a {
+  color: inherit;
+}
