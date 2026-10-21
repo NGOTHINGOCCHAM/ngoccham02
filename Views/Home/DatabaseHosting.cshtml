@@ -1,0 +1,52 @@
+@{
+    ViewData["Title"] = "Buổi 9 - CSDL trên hosting";
+}
+
+<h1 class="mb-3">Buổi 9: Đưa cơ sở dữ liệu lên hosting</h1>
+
+<h2 class="h4">1. Tự cập nhật bảng khi ứng dụng khởi động</h2>
+<p>
+    Hosting không chạy được lệnh <code>dotnet ef database update</code>, nên <code>Program.cs</code> gọi
+    <code>Database.Migrate()</code> mỗi khi ứng dụng khởi động. Lệnh này chạy các migration chưa áp dụng
+    (lần đầu sẽ tạo bảng). Nếu lỗi, ví dụ chưa cấu hình CSDL, thì chỉ ghi log để website vẫn chạy.
+</p>
+<pre class="bg-light border rounded p-3"><code>using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService&lt;ApplicationDbContext&gt;();
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Không cập nhật được cơ sở dữ liệu khi khởi động.");
+    }
+}</code></pre>
+
+<h2 class="h4 mt-4">2. Chuỗi kết nối trên hosting</h2>
+<p>
+    Repo để public nên không được commit mật khẩu CSDL vào code. Chuỗi kết nối thật lưu trong GitHub Secret
+    <code>DB_CONNECTION_STRING</code>. Khi deploy, workflow tạo file <code>appsettings.Production.json</code>
+    trong bản publish. Trên hosting ứng dụng chạy ở môi trường Production nên file này ghi đè
+    <code>DefaultConnection</code> trong <code>appsettings.json</code>. File này cũng được thêm vào
+    <code>.gitignore</code> để không lỡ commit.
+</p>
+<pre class="bg-light border rounded p-3"><code>- name: Tạo appsettings.Production.json
+  shell: pwsh
+  env:
+    DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+  run: |
+    @@{ ConnectionStrings = @@{ DefaultConnection = $env:DB_CONNECTION_STRING } } |
+      ConvertTo-Json |
+      Set-Content -Path ./publish/appsettings.Production.json -Encoding utf8</code></pre>
+
+<h2 class="h4 mt-4">3. Các bước cấu hình</h2>
+<ol class="list-group list-group-numbered mb-4">
+    <li class="list-group-item">Control Panel MonsterASP → <strong>Databases</strong> → tạo database MSSQL, copy connection string (có mật khẩu).</li>
+    <li class="list-group-item">GitHub repo → <strong>Settings → Secrets and variables → Actions</strong> → thêm secret <code>DB_CONNECTION_STRING</code> với connection string vừa copy.</li>
+    <li class="list-group-item">Push code: workflow build, tạo <code>appsettings.Production.json</code> rồi deploy. Ứng dụng khởi động sẽ tự tạo bảng.</li>
+    <li class="list-group-item">Kiểm tra trạng thái kết nối ở trang Buổi 8 và thêm, sửa, xoá dữ liệu ở trang Sản phẩm.</li>
+</ol>
+
+<a class="btn btn-primary" asp-controller="Product" asp-action="Index">Sản phẩm</a>
+<a class="btn btn-outline-primary" asp-controller="Home" asp-action="Database">Trạng thái kết nối (Buổi 8)</a>
