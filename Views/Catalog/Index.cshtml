@@ -1,11 +1,11 @@
-@model IEnumerable<Product>
+@model IEnumerable<CatalogItem>
 @{
     ViewData["Title"] = ViewData["Heading"];
 }
 
 <h1 class="mb-3">@ViewData["Heading"]</h1>
 <p class="text-muted">
-    <code>ProductController</code> dùng <code>[Route("san-pham")]</code>. Các link bên dưới tạo bằng tag helper
+    <code>CatalogController</code> dùng <code>[Route("san-pham")]</code>. Các link bên dưới tạo bằng tag helper
     <code>asp-action</code> nên tự sinh đúng URL theo attribute route.
 </p>
 

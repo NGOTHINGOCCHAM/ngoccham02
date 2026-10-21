@@ -1,0 +1,95 @@
+@{
+    ViewData["Title"] = "Buổi 8 - Kết nối CSDL";
+    var applied = ViewBag.AppliedMigrations as List<string> ?? new();
+    var pending = ViewBag.PendingMigrations as List<string> ?? new();
+}
+
+<h1 class="mb-3">Buổi 8: Kết nối cơ sở dữ liệu</h1>
+<p class="lead">
+    Dùng <strong>Entity Framework Core</strong> (EF Core) để làm việc với SQL Server qua các lớp C#,
+    không cần tự viết câu lệnh SQL.
+</p>
+
+<div class="card mb-4 @(ViewBag.CanConnect ? "border-success" : "border-danger")">
+    <div class="card-header">Trạng thái kết nối (môi trường <code>@ViewBag.EnvironmentName</code>)</div>
+    <div class="card-body">
+        @if (ViewBag.CanConnect)
+        {
+            <p class="text-success fw-semibold">Đã kết nối được cơ sở dữ liệu.</p>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Migration đã áp dụng</dt>
+                <dd class="col-sm-8">@(applied.Count == 0 ? "Chưa có" : string.Join(", ", applied))</dd>
+                <dt class="col-sm-4">Migration chưa áp dụng</dt>
+                <dd class="col-sm-8">@(pending.Count == 0 ? "Không có" : string.Join(", ", pending))</dd>
+                <dt class="col-sm-4">Số dòng trong bảng Products</dt>
+                <dd class="col-sm-8 mb-0">@(ViewBag.ProductCount ?? "Chưa có bảng, cần chạy migration")</dd>
+            </dl>
+        }
+        else
+        {
+            <p class="text-danger fw-semibold">Chưa kết nối được cơ sở dữ liệu.</p>
+            @if (ViewBag.Error != null)
+            {
+                <p class="small font-monospace text-break">@ViewBag.Error</p>
+            }
+            <p class="small text-muted mb-0">
+                LocalDB trong chuỗi kết nối mặc định chỉ chạy trên Windows. Trên macOS/Linux, đặt chuỗi kết nối tới
+                một SQL Server khác bằng user-secrets (xem bước 3).
+            </p>
+        }
+    </div>
+</div>
+
+<h2 class="h4">1. Cài package</h2>
+<p>Các package EF Core cùng phiên bản với .NET (10):</p>
+<pre class="bg-light border rounded p-3"><code>dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 10.0.13
+dotnet add package Microsoft.EntityFrameworkCore.Tools --version 10.0.13
+dotnet tool install -g dotnet-ef      # công cụ dòng lệnh để chạy migration</code></pre>
+
+<h2 class="h4 mt-4">2. Model và DbContext</h2>
+<div class="row g-3">
+    <div class="col-lg-5">
+        <p class="mb-1"><code>Models/Product.cs</code>: mỗi thuộc tính là một cột của bảng.</p>
+        <pre class="bg-light border rounded p-3"><code>public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public DateTime CreatedAt { get; set; }
+}</code></pre>
+    </div>
+    <div class="col-lg-7">
+        <p class="mb-1"><code>Data/ApplicationDbContext.cs</code>: mỗi <code>DbSet</code> là một bảng.</p>
+        <pre class="bg-light border rounded p-3"><code>public class ApplicationDbContext : DbContext
+{
+    public DbSet&lt;Product&gt; Products { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity&lt;Product&gt;()
+            .Property(p =&gt; p.Price)
+            .HasPrecision(18, 2);   // decimal(18,2)
+    }
+}</code></pre>
+    </div>
+</div>
+
+<h2 class="h4 mt-4">3. Chuỗi kết nối</h2>
+<p class="mb-1">Khai báo trong <code>appsettings.json</code>:</p>
+<pre class="bg-light border rounded p-3"><code>"ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=DemoMVC;Trusted_Connection=True;..."
+}</code></pre>
+<p class="mb-1">Đăng ký DbContext trong <code>Program.cs</code>:</p>
+<pre class="bg-light border rounded p-3"><code>builder.Services.AddDbContext&lt;ApplicationDbContext&gt;(options =&gt;
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));</code></pre>
+<p class="mb-1">Trên macOS (không có LocalDB), ghi đè chuỗi kết nối bằng user-secrets, không ghi mật khẩu vào code:</p>
+<pre class="bg-light border rounded p-3"><code>dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=...;Database=...;User Id=...;Password=...;TrustServerCertificate=True"</code></pre>
+
+<h2 class="h4 mt-4">4. Tạo bảng bằng migration</h2>
+<pre class="bg-light border rounded p-3"><code>dotnet ef migrations add InitialCreate   # sinh code tạo bảng trong thư mục Migrations/
+dotnet ef database update                # chạy migration để tạo bảng trong CSDL</code></pre>
+<p class="mb-0">
+    Migration <code>InitialCreate</code> tạo bảng <code>Products</code> với các cột
+    <code>Id int IDENTITY</code>, <code>Name nvarchar(max)</code>, <code>Price decimal(18,2)</code>,
+    <code>CreatedAt datetime2</code>, và bảng <code>__EFMigrationsHistory</code> để ghi lại các migration đã chạy.
+</p>

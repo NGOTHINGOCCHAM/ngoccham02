@@ -9,7 +9,7 @@
 <section class="hero rounded-4 p-4 p-md-5 mb-4">
     <h1 class="display-6 fw-bold">Thực hành ASP.NET Core MVC</h1>
     <p class="lead mb-0">
-        Môi trường, CI/CD, kiến trúc MVC, định tuyến, gửi nhận dữ liệu, quản lý trạng thái và Layout.
+        Môi trường, CI/CD, kiến trúc MVC, định tuyến, gửi nhận dữ liệu, quản lý trạng thái, Layout và cơ sở dữ liệu.
     </p>
 </section>
 
@@ -60,7 +60,7 @@
             </div>
             <div class="card-footer bg-transparent border-0 pt-0 pb-3">
                 <a class="btn btn-sm btn-outline-primary" asp-controller="Routing" asp-action="Index">Cấu trúc URL</a>
-                <a class="btn btn-sm btn-outline-primary" asp-controller="Product" asp-action="Index">[Route]</a>
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Catalog" asp-action="Index">[Route]</a>
             </div>
         </div>
     </div>
@@ -98,6 +98,18 @@
             </div>
             <div class="card-footer bg-transparent border-0 pt-0 pb-3">
                 <a class="btn btn-sm btn-outline-primary" asp-action="LayoutDemo">Xem</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card topic-card h-100">
+            <div class="card-body">
+                <span class="badge rounded-pill text-bg-primary mb-2">Buổi 8</span>
+                <h2 class="h5 card-title">Kết nối CSDL</h2>
+                <p class="card-text text-muted">EF Core với SQL Server: Model, DbContext, chuỗi kết nối và migration.</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <a class="btn btn-sm btn-outline-primary" asp-action="Database">Xem</a>
             </div>
         </div>
     </div>
