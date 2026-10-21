@@ -91,3 +91,15 @@ Chạy ứng dụng và mở menu **Buổi 3** (`/Home/Architecture`, code ở [
 | Controller, View, Model | [Controllers/](Controllers/), [Views/](Views/), [Models/](Models/) | |
 | Gửi nhận dữ liệu giữa Controller và View: `ViewBag`, tham số action, form POST, query string | [DataController](Controllers/DataController.cs), [Views/Data/Index.cshtml](Views/Data/Index.cshtml) | `/Data`, `/Data/Hello?name=An` |
 | Gửi nhận dữ liệu qua Model: strongly-typed view, model binding, kiểm tra dữ liệu bằng Data Annotations | [Student](Models/Student.cs), [StudentController](Controllers/StudentController.cs), [Views/Student/](Views/Student/) | `/Student`, `/Student/Create` |
+
+## Buổi 6 – Tìm hiểu về quản lý trạng thái
+
+Code ở [StateController](Controllers/StateController.cs) và [Views/State/](Views/State/), demo tại `/State`.
+
+| | ViewData | ViewBag | TempData |
+|---|---|---|---|
+| Kiểu | `ViewDataDictionary` (key-value) | `dynamic` | `ITempDataDictionary` (key-value) |
+| Ép kiểu khi đọc | Cần | Không cần | Cần |
+| Phạm vi | Một request | Một request | Đến khi được đọc, giữ được qua redirect |
+
+ViewBag và ViewData dùng chung một kho dữ liệu. TempData bị xoá sau khi đọc, trừ khi gọi `Keep()` hoặc đọc bằng `Peek()`.

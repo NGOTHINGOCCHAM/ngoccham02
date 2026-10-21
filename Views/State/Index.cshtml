@@ -1,0 +1,94 @@
+@{
+    ViewData["Title"] = "Quản lý trạng thái";
+    var lessons = ViewData["Lessons"] as List<string> ?? new();
+}
+
+<h1 class="mb-3">Quản lý trạng thái: ViewData, ViewBag, TempData</h1>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><code>ViewData</code></div>
+            <div class="card-body">
+                <p>Khoá học: <strong>@ViewData["Course"]</strong></p>
+                <p class="mb-1">
+                    Các bài học (phải ép kiểu: <code>ViewData["Lessons"] as List&lt;string&gt;</code>):
+                </p>
+                <ul class="mb-0">
+                    @foreach (var lesson in lessons)
+                    {
+                        <li>@lesson</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><code>ViewBag</code></div>
+            <div class="card-body">
+                <p>Giảng viên: <strong>@ViewBag.Teacher</strong></p>
+                <p>
+                    Ngày bắt đầu: <strong>@ViewBag.StartDate.ToString("dd/MM/yyyy")</strong>
+                    (gọi thẳng phương thức của <code>DateTime</code>, không cần ép kiểu)
+                </p>
+                <p class="small text-muted mb-0">
+                    ViewBag và ViewData dùng chung dữ liệu: <code>ViewData["Teacher"]</code> cũng cho ra
+                    <strong>@ViewData["Teacher"]</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header"><code>TempData</code></div>
+    <div class="card-body">
+        <p>
+            TempData giữ được dữ liệu qua <strong>một lần chuyển hướng</strong> (redirect) sang request khác,
+            thường dùng để hiện thông báo sau khi thêm, sửa, xoá. ViewData và ViewBag chỉ tồn tại trong
+            một request nên sẽ mất sau khi redirect.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-primary" asp-action="SendTempData">Tạo TempData rồi redirect</a>
+            <a class="btn btn-outline-primary" asp-action="SendTempData" asp-route-keep="true">Tạo TempData, redirect và Keep()</a>
+        </div>
+    </div>
+</div>
+
+<h2 class="h4">So sánh</h2>
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr><th></th><th>ViewData</th><th>ViewBag</th><th>TempData</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>Kiểu dữ liệu</th>
+            <td><code>ViewDataDictionary</code> (key-value)</td>
+            <td><code>dynamic</code></td>
+            <td><code>ITempDataDictionary</code> (key-value)</td>
+        </tr>
+        <tr>
+            <th>Cách dùng</th>
+            <td><code>ViewData["Key"]</code></td>
+            <td><code>ViewBag.Key</code></td>
+            <td><code>TempData["Key"]</code></td>
+        </tr>
+        <tr>
+            <th>Ép kiểu khi đọc</th>
+            <td>Cần</td>
+            <td>Không cần</td>
+            <td>Cần</td>
+        </tr>
+        <tr>
+            <th>Phạm vi</th>
+            <td colspan="2">Một request, từ Controller sang View</td>
+            <td>Đến khi được đọc, kể cả qua redirect</td>
+        </tr>
+        <tr>
+            <th>Lưu ở đâu</th>
+            <td colspan="2">Bộ nhớ, trong request hiện tại</td>
+            <td>Cookie (mặc định) hoặc Session</td>
+        </tr>
+    </tbody>
+</table>
