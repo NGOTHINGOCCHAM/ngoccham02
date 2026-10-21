@@ -1,0 +1,76 @@
+@{
+    ViewData["Title"] = "Thông tin route";
+    var parameters = ViewBag.Parameters as Dictionary<string, string?> ?? new();
+}
+
+<h1 class="mb-3">Thông tin route</h1>
+
+<p class="fs-5 font-monospace bg-light border rounded p-3 text-break">
+    <span class="badge text-bg-secondary">@Context.Request.Method</span>
+    @($"{Context.Request.Path}{Context.Request.QueryString}")
+</p>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">Route values (từ đường dẫn)</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var item in ViewContext.RouteData.Values)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>@item.Key</span><code>@item.Value</code>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">Query string</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var item in Context.Request.Query)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>@item.Key</span><code>@item.Value</code>
+                    </li>
+                }
+                @if (Context.Request.Query.Count == 0)
+                {
+                    <li class="list-group-item text-muted">Không có</li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">Tham số action nhận được</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var item in parameters)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>@item.Key</span><code>@(item.Value ?? "null")</code>
+                    </li>
+                }
+                @if (parameters.Count == 0)
+                {
+                    <li class="list-group-item text-muted">Không có</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-warning mt-3">
+        <strong>Lỗi model binding:</strong>
+        <ul class="mb-0">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+<a class="btn btn-outline-secondary mt-3" asp-action="Index">← Quay lại</a>
