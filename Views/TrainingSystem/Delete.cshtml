@@ -1,0 +1,38 @@
+@model TrainingSystem
+@{
+    ViewData["Title"] = "Xoá hệ đào tạo";
+    var studentCount = (int)ViewBag.StudentCount;
+}
+
+<h1 class="mb-3">Xoá hệ đào tạo</h1>
+@if (studentCount == 0)
+{
+    <div class="alert alert-warning">Bạn có chắc muốn xoá hệ đào tạo này?</div>
+}
+else
+{
+    <div class="alert alert-danger">
+        Không xoá được: còn @studentCount sinh viên thuộc hệ này (tham chiếu qua khoá ngoại).
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.TrainingSystemCode)</dt>
+                    <dd class="col-sm-8 font-monospace">@Model.TrainingSystemCode</dd>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Name)</dt>
+                    <dd class="col-sm-8 mb-0">@Model.Name</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="TrainingSystemCode" />
+    <button type="submit" class="btn btn-danger" disabled="@(studentCount > 0)">Xoá</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">Huỷ</a>
+</form>

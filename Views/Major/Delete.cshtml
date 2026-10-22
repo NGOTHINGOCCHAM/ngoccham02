@@ -1,0 +1,41 @@
+@model Major
+@{
+    ViewData["Title"] = "Xoá ngành";
+    var studentCount = (int)ViewBag.StudentCount;
+}
+
+<h1 class="mb-3">Xoá ngành</h1>
+@if (studentCount == 0)
+{
+    <div class="alert alert-warning">Bạn có chắc muốn xoá ngành này?</div>
+}
+else
+{
+    <div class="alert alert-danger">
+        Không xoá được: ngành còn @studentCount sinh viên tham chiếu tới qua khoá ngoại.
+        Hãy chuyển hoặc xoá các sinh viên này trước.
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.MajorCode)</dt>
+                    <dd class="col-sm-8 font-monospace">@Model.MajorCode</dd>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Name)</dt>
+                    <dd class="col-sm-8">@Model.Name</dd>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.FacultyCode)</dt>
+                    <dd class="col-sm-8 mb-0">@Model.Faculty?.Name</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="MajorCode" />
+    <button type="submit" class="btn btn-danger" disabled="@(studentCount > 0)">Xoá</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">Huỷ</a>
+</form>

@@ -1,0 +1,70 @@
+@model Student
+@{
+    ViewData["Title"] = "Sửa sinh viên";
+}
+
+<h1 class="mb-3">Sửa sinh viên</h1>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3">
+                <label asp-for="StudentCode" class="form-label"></label>
+                @* Chỉ hiển thị, không gửi lên: mã sinh viên do chương trình quản lý *@
+                <input id="StudentCode" value="@Model.StudentCode" class="form-control font-monospace" readonly />
+            </div>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <label asp-for="DateOfBirth" class="form-label"></label>
+                    <input asp-for="DateOfBirth" class="form-control" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 mb-3">
+                    <label asp-for="EnrollmentYear" class="form-label"></label>
+                    <input asp-for="EnrollmentYear" class="form-control" />
+                    <span asp-validation-for="EnrollmentYear" class="text-danger"></span>
+                </div>
+                <div class="col-sm-8 mb-3">
+                    <label asp-for="TrainingSystemCode" class="form-label"></label>
+                    <select asp-for="TrainingSystemCode" asp-items="ViewBag.TrainingSystems" class="form-select">
+                        <option value="">-- Chọn hệ đào tạo --</option>
+                    </select>
+                    <span asp-validation-for="TrainingSystemCode" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="MajorCode" class="form-label"></label>
+                <select asp-for="MajorCode" asp-items="ViewBag.Majors" class="form-select">
+                    <option value="">-- Chọn ngành --</option>
+                </select>
+                <span asp-validation-for="MajorCode" class="text-danger"></span>
+            </div>
+            <div class="alert alert-warning small">
+                Đổi năm nhập học, hệ đào tạo hoặc ngành thì sinh viên được cấp mã mới theo năm, hệ và ngành mới.
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Huỷ</a>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <partial name="_CodeStructure" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,38 @@
+@model Major
+@{
+    ViewData["Title"] = "Sửa ngành";
+}
+
+<h1 class="mb-3">Sửa ngành</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="MajorCode" class="form-label"></label>
+                @* Mã ngành là khoá chính nên không cho sửa. Ô readonly vẫn được gửi lên cùng form *@
+                <input asp-for="MajorCode" class="form-control font-monospace" readonly />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="FacultyCode" class="form-label"></label>
+                <select asp-for="FacultyCode" asp-items="ViewBag.Faculties" class="form-select">
+                    <option value="">-- Chọn khoa --</option>
+                </select>
+                <span asp-validation-for="FacultyCode" class="text-danger"></span>
+                <div class="form-text">Đổi khoa thì các sinh viên của ngành cũng chuyển sang khoa mới.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Huỷ</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

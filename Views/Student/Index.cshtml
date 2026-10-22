@@ -1,41 +1,72 @@
 @model IEnumerable<Student>
 @{
-    ViewData["Title"] = "Danh sách sinh viên";
+    ViewData["Title"] = "Sinh viên";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">Danh sách sinh viên</h1>
+    <h1 class="mb-0">Sinh viên</h1>
     <a class="btn btn-primary" asp-action="Create">+ Thêm sinh viên</a>
 </div>
-<p class="text-muted">
-    Controller truyền danh sách bằng <code>return View(Students)</code>,
-    View nhận qua <code>@@model IEnumerable&lt;Student&gt;</code> rồi duyệt bằng <code>@@foreach</code>.
-</p>
 
-<table class="table table-hover align-middle">
-    <thead class="table-light">
-        <tr>
-            <th>#</th>
-            <th>@Html.DisplayNameFor(m => m.FullName)</th>
-            <th>@Html.DisplayNameFor(m => m.Email)</th>
-            <th>@Html.DisplayNameFor(m => m.Age)</th>
-            <th>@Html.DisplayNameFor(m => m.Major)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var s in Model)
-        {
-            <tr>
-                <td>@s.Id</td>
-                <td>@s.FullName</td>
-                <td>@s.Email</td>
-                <td>@s.Age</td>
-                <td>@s.Major</td>
-                <td class="text-end">
-                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@s.Id">Chi tiết</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+@if (TempData["Message"] is string message)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    </div>
+}
+
+@* Lọc theo khoa: gửi mã khoa qua query string, ví dụ /Student?facultyCode=CNTT *@
+<form asp-action="Index" method="get" class="row g-2 align-items-center mb-3">
+    <div class="col-sm-6 col-lg-4">
+        <select name="facultyCode" class="form-select" asp-items="ViewBag.Faculties" aria-label="Lọc theo khoa">
+            <option value="">-- Tất cả các khoa --</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">Lọc</button>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-secondary">Chưa có sinh viên nào. Bấm "Thêm sinh viên" để tạo mới.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.StudentCode)</th>
+                    <th>@Html.DisplayNameFor(m => m.FullName)</th>
+                    <th>@Html.DisplayNameFor(m => m.DateOfBirth)</th>
+                    <th>@Html.DisplayNameFor(m => m.Faculty)</th>
+                    <th>@Html.DisplayNameFor(m => m.Major)</th>
+                    <th>@Html.DisplayNameFor(m => m.TrainingSystem)</th>
+                    <th>@Html.DisplayNameFor(m => m.EnrollmentYear)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="font-monospace">@item.StudentCode</td>
+                        <td>@item.FullName</td>
+                        <td>@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Faculty?.Name</td>
+                        <td>@item.Major?.Name</td>
+                        <td>@item.TrainingSystem?.Name</td>
+                        <td>@item.EnrollmentYear</td>
+                        <td class="text-end text-nowrap">
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Id">Chi tiết</a>
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Sửa</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Xoá</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -9,7 +9,7 @@
 <section class="hero rounded-4 p-4 p-md-5 mb-4">
     <h1 class="display-6 fw-bold">Thực hành ASP.NET Core MVC</h1>
     <p class="lead mb-0">
-        Môi trường, CI/CD, kiến trúc MVC, định tuyến, gửi nhận dữ liệu, quản lý trạng thái, Layout và cơ sở dữ liệu.
+        Môi trường, CI/CD, kiến trúc MVC, định tuyến, gửi nhận dữ liệu, quản lý trạng thái, Layout, cơ sở dữ liệu và khoá ngoại.
     </p>
 </section>
 
@@ -73,7 +73,7 @@
             </div>
             <div class="card-footer bg-transparent border-0 pt-0 pb-3">
                 <a class="btn btn-sm btn-outline-primary" asp-controller="Data" asp-action="Index">Controller ↔ View</a>
-                <a class="btn btn-sm btn-outline-primary" asp-controller="Student" asp-action="Index">Model</a>
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Learner" asp-action="Index">Model</a>
             </div>
         </div>
     </div>
@@ -123,6 +123,19 @@
             <div class="card-footer bg-transparent border-0 pt-0 pb-3">
                 <a class="btn btn-sm btn-outline-primary" asp-controller="Product" asp-action="Index">Sản phẩm</a>
                 <a class="btn btn-sm btn-outline-primary" asp-action="DatabaseHosting">CSDL trên hosting</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card topic-card h-100">
+            <div class="card-body">
+                <span class="badge rounded-pill text-bg-primary mb-2">Buổi 10</span>
+                <h2 class="h5 card-title">CRUD với khoá ngoại</h2>
+                <p class="card-text text-muted">Bảng Sinh viên liên kết với Khoa, Ngành, Hệ đào tạo; các khoa của Trường Đại học Mỏ - Địa chất; mã sinh viên tự sinh.</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Student" asp-action="Index">Sinh viên</a>
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Faculty" asp-action="Index">Khoa</a>
             </div>
         </div>
     </div>

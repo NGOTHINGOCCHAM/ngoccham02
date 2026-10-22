@@ -51,12 +51,12 @@
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle @Active("Data")@Active("Student")" href="#" role="button"
+                            <a class="nav-link dropdown-toggle @Active("Data")@Active("Learner")" href="#" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">Buổi 5</a>
                             <ul class="dropdown-menu">
                                 <li><h6 class="dropdown-header">Gửi nhận dữ liệu giữa M-V-C</h6></li>
                                 <li><a class="dropdown-item" asp-controller="Data" asp-action="Index">Controller ↔ View</a></li>
-                                <li><a class="dropdown-item" asp-controller="Student" asp-action="Index">Thông qua Model</a></li>
+                                <li><a class="dropdown-item" asp-controller="Learner" asp-action="Index">Thông qua Model</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -75,6 +75,17 @@
                                 <li><h6 class="dropdown-header">CRUD, Validation và CSDL trên hosting</h6></li>
                                 <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
                                 <li><a class="dropdown-item" asp-controller="Home" asp-action="DatabaseHosting">CSDL trên hosting</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle @Active("Student")@Active("Faculty")@Active("Major")@Active("TrainingSystem")" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">Buổi 10</a>
+                            <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">CRUD với khoá ngoại, sinh mã tự động</h6></li>
+                                <li><a class="dropdown-item" asp-controller="Student" asp-action="Index">Sinh viên</a></li>
+                                <li><a class="dropdown-item" asp-controller="Faculty" asp-action="Index">Khoa</a></li>
+                                <li><a class="dropdown-item" asp-controller="Major" asp-action="Index">Ngành</a></li>
+                                <li><a class="dropdown-item" asp-controller="TrainingSystem" asp-action="Index">Hệ đào tạo</a></li>
                             </ul>
                         </li>
                     </ul>

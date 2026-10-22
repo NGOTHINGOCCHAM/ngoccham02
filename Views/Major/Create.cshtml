@@ -1,0 +1,38 @@
+@model Major
+@{
+    ViewData["Title"] = "Thêm ngành";
+}
+
+<h1 class="mb-3">Thêm ngành</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="MajorCode" class="form-label"></label>
+                <input asp-for="MajorCode" class="form-control" maxlength="2" placeholder="Ví dụ: 05" />
+                <span asp-validation-for="MajorCode" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="Ví dụ: Công nghệ thông tin" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="FacultyCode" class="form-label"></label>
+                @* Ô chọn khoá ngoại: value là mã khoa, chữ hiển thị là tên khoa *@
+                <select asp-for="FacultyCode" asp-items="ViewBag.Faculties" class="form-select">
+                    <option value="">-- Chọn khoa --</option>
+                </select>
+                <span asp-validation-for="FacultyCode" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Huỷ</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -90,7 +90,7 @@ Chạy ứng dụng và mở menu **Buổi 3** (`/Home/Architecture`, code ở [
 |---|---|---|
 | Controller, View, Model | [Controllers/](Controllers/), [Views/](Views/), [Models/](Models/) | |
 | Gửi nhận dữ liệu giữa Controller và View: `ViewBag`, tham số action, form POST, query string | [DataController](Controllers/DataController.cs), [Views/Data/Index.cshtml](Views/Data/Index.cshtml) | `/Data`, `/Data/Hello?name=An` |
-| Gửi nhận dữ liệu qua Model: strongly-typed view, model binding, kiểm tra dữ liệu bằng Data Annotations | [Student](Models/Student.cs), [StudentController](Controllers/StudentController.cs), [Views/Student/](Views/Student/) | `/Student`, `/Student/Create` |
+| Gửi nhận dữ liệu qua Model: strongly-typed view, model binding, kiểm tra dữ liệu bằng Data Annotations | [Learner](Models/Learner.cs), [LearnerController](Controllers/LearnerController.cs), [Views/Learner/](Views/Learner/) | `/Learner`, `/Learner/Create` |
 
 ## Buổi 6 – Tìm hiểu về quản lý trạng thái
 
@@ -151,3 +151,56 @@ Cấu hình: Control Panel MonsterASP → **Databases** → tạo database MSSQL
 | Secret | Giá trị |
 |---|---|
 | `DB_CONNECTION_STRING` | Connection string của database trên MonsterASP |
+
+## Buổi 10 (22/10) – Tiếp tục CRUD: khoá ngoại và sinh mã tự động
+
+Trên website: menu **Buổi 10** → **Sinh viên** (`/Student`), **Khoa** (`/Faculty`), **Ngành** (`/Major`), **Hệ đào tạo** (`/TrainingSystem`).
+
+### Khoá ngoại
+
+| Bảng | Khoá chính | Khoá ngoại |
+|---|---|---|
+| `Faculties` (Khoa) | `FacultyCode`, ví dụ `CNTT` | |
+| `Majors` (Ngành) | `MajorCode`, 2 chữ số, ví dụ `05` | `FacultyCode` → `Faculties` |
+| `TrainingSystems` (Hệ đào tạo) | `TrainingSystemCode`, 2 chữ số, ví dụ `21` | |
+| `Students` (Sinh viên) | `Id`, mã sinh viên `StudentCode` không trùng (UNIQUE) | `FacultyCode` → `Faculties`, `MajorCode` → `Majors`, `TrainingSystemCode` → `TrainingSystems` |
+
+- Model: [Faculty](Models/Faculty.cs), [Major](Models/Major.cs), [TrainingSystem](Models/TrainingSystem.cs), [Student](Models/Student.cs). Khoá ngoại khai báo bằng Fluent API (`HasOne`, `WithMany`, `HasForeignKey`) trong [ApplicationDbContext](Data/ApplicationDbContext.cs).
+- Khoá ngoại đặt `DeleteBehavior.Restrict`: khoa còn ngành hoặc sinh viên thì không xoá được, trang Xoá báo rõ lý do.
+- Bảng Sinh viên và bảng Khoa liên kết qua mã khoa. Khi thêm hoặc sửa sinh viên chỉ cần chọn ngành (ô chọn nhóm theo khoa), mã khoa tự lấy theo khoa của ngành.
+- Migration `FacultyMajorStudent` tạo 4 bảng và nhập sẵn dữ liệu bằng `HasData`.
+
+### Dữ liệu các khoa của Trường Đại học Mỏ - Địa chất
+
+12 khoa theo trang [Các khoa](https://humg.edu.vn/gioi-thieu/co-cau-to-chuc/cac-khoa/Pages/default.aspx) của trường. Mã khoa là chữ viết tắt tự đặt.
+
+| Mã | Tên khoa | Mã | Tên khoa |
+|---|---|---|---|
+| `KHCB` | Khoa Khoa học cơ bản | `LLCT` | Khoa Lý luận Chính trị |
+| `CNTT` | Khoa Công nghệ thông tin | `TDBD` | Khoa Trắc địa - Bản đồ và Quản lý đất đai |
+| `MO` | Khoa Mỏ | `GDQP` | Khoa Giáo dục Quốc phòng |
+| `KTQTKD` | Khoa Kinh tế và Quản trị kinh doanh | `DKNL` | Khoa Dầu khí và Năng lượng |
+| `KHKTDC` | Khoa Khoa học và Kỹ thuật Địa chất | `CD` | Khoa Cơ điện |
+| `XD` | Khoa Xây dựng | `MT` | Khoa Môi trường |
+
+Nhập sẵn thêm hệ `21` – Đại học chính quy và ngành `05` – Công nghệ thông tin (thuộc khoa `CNTT`) theo ví dụ của đề bài. Các ngành, hệ khác thêm trên website.
+
+### Sinh mã sinh viên tự động
+
+Mã sinh viên dạng `2821050199`:
+
+| Phần | Ý nghĩa |
+|---|---|
+| `28` | 2 số cuối năm nhập học (2028) |
+| `21` | Mã hệ đào tạo (Đại học chính quy) |
+| `05` | Mã ngành (Công nghệ thông tin) |
+| `0199` | Số thứ tự |
+
+Hàm `GenerateStudentCodeAsync` trong [StudentController](Controllers/StudentController.cs) tìm mã lớn nhất có cùng 6 số đầu rồi cộng 1. Đã có `2821050199` thì sinh viên tiếp theo nhận mã `2821050200`, chưa có ai thì bắt đầu từ `0001`.
+
+- Trang thêm sinh viên hiển thị trước mã sẽ được cấp. Mã tự cập nhật khi đổi năm, hệ hoặc ngành (gọi action `NextCode` trả về JSON).
+- Thêm xong, thông báo cho biết mã vừa cấp và mã của sinh viên tiếp theo.
+- Sửa năm nhập học, hệ hoặc ngành thì sinh viên được cấp mã mới theo năm, hệ, ngành mới.
+- Cột `StudentCode` có chỉ mục UNIQUE. Hai người thêm cùng lúc mà trùng mã thì chương trình sinh lại mã và lưu lại.
+
+Demo gửi nhận dữ liệu qua Model của buổi 5 được đổi tên thành `LearnerController` (URL `/Learner`) để dành tên `Student` cho bài này.

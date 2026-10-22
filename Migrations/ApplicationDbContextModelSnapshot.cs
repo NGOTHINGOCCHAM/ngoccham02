@@ -22,6 +22,114 @@ namespace DemoMVC.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DemoMVC.Models.Faculty", b =>
+                {
+                    b.Property<string>("FacultyCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("FacultyCode");
+
+                    b.ToTable("Faculties");
+
+                    b.HasData(
+                        new
+                        {
+                            FacultyCode = "KHCB",
+                            Name = "Khoa Khoa học cơ bản"
+                        },
+                        new
+                        {
+                            FacultyCode = "CNTT",
+                            Name = "Khoa Công nghệ thông tin"
+                        },
+                        new
+                        {
+                            FacultyCode = "MO",
+                            Name = "Khoa Mỏ"
+                        },
+                        new
+                        {
+                            FacultyCode = "KTQTKD",
+                            Name = "Khoa Kinh tế và Quản trị kinh doanh"
+                        },
+                        new
+                        {
+                            FacultyCode = "KHKTDC",
+                            Name = "Khoa Khoa học và Kỹ thuật Địa chất"
+                        },
+                        new
+                        {
+                            FacultyCode = "LLCT",
+                            Name = "Khoa Lý luận Chính trị"
+                        },
+                        new
+                        {
+                            FacultyCode = "TDBD",
+                            Name = "Khoa Trắc địa - Bản đồ và Quản lý đất đai"
+                        },
+                        new
+                        {
+                            FacultyCode = "GDQP",
+                            Name = "Khoa Giáo dục Quốc phòng"
+                        },
+                        new
+                        {
+                            FacultyCode = "DKNL",
+                            Name = "Khoa Dầu khí và Năng lượng"
+                        },
+                        new
+                        {
+                            FacultyCode = "CD",
+                            Name = "Khoa Cơ điện"
+                        },
+                        new
+                        {
+                            FacultyCode = "XD",
+                            Name = "Khoa Xây dựng"
+                        },
+                        new
+                        {
+                            FacultyCode = "MT",
+                            Name = "Khoa Môi trường"
+                        });
+                });
+
+            modelBuilder.Entity("DemoMVC.Models.Major", b =>
+                {
+                    b.Property<string>("MajorCode")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("FacultyCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("MajorCode");
+
+                    b.HasIndex("FacultyCode");
+
+                    b.ToTable("Majors");
+
+                    b.HasData(
+                        new
+                        {
+                            MajorCode = "05",
+                            FacultyCode = "CNTT",
+                            Name = "Công nghệ thông tin"
+                        });
+                });
+
             modelBuilder.Entity("DemoMVC.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -45,6 +153,138 @@ namespace DemoMVC.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("DemoMVC.Models.Student", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("EnrollmentYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FacultyCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("MajorCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("StudentCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("TrainingSystemCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FacultyCode");
+
+                    b.HasIndex("MajorCode");
+
+                    b.HasIndex("StudentCode")
+                        .IsUnique();
+
+                    b.HasIndex("TrainingSystemCode");
+
+                    b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("DemoMVC.Models.TrainingSystem", b =>
+                {
+                    b.Property<string>("TrainingSystemCode")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("TrainingSystemCode");
+
+                    b.ToTable("TrainingSystems");
+
+                    b.HasData(
+                        new
+                        {
+                            TrainingSystemCode = "21",
+                            Name = "Đại học chính quy"
+                        });
+                });
+
+            modelBuilder.Entity("DemoMVC.Models.Major", b =>
+                {
+                    b.HasOne("DemoMVC.Models.Faculty", "Faculty")
+                        .WithMany("Majors")
+                        .HasForeignKey("FacultyCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Faculty");
+                });
+
+            modelBuilder.Entity("DemoMVC.Models.Student", b =>
+                {
+                    b.HasOne("DemoMVC.Models.Faculty", "Faculty")
+                        .WithMany("Students")
+                        .HasForeignKey("FacultyCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DemoMVC.Models.Major", "Major")
+                        .WithMany("Students")
+                        .HasForeignKey("MajorCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DemoMVC.Models.TrainingSystem", "TrainingSystem")
+                        .WithMany("Students")
+                        .HasForeignKey("TrainingSystemCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Faculty");
+
+                    b.Navigation("Major");
+
+                    b.Navigation("TrainingSystem");
+                });
+
+            modelBuilder.Entity("DemoMVC.Models.Faculty", b =>
+                {
+                    b.Navigation("Majors");
+
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("DemoMVC.Models.Major", b =>
+                {
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("DemoMVC.Models.TrainingSystem", b =>
+                {
+                    b.Navigation("Students");
                 });
 #pragma warning restore 612, 618
         }

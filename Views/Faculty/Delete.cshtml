@@ -1,0 +1,41 @@
+@model Faculty
+@{
+    ViewData["Title"] = "Xoá khoa";
+    var majorCount = (int)ViewBag.MajorCount;
+    var studentCount = (int)ViewBag.StudentCount;
+    var canDelete = majorCount == 0 && studentCount == 0;
+}
+
+<h1 class="mb-3">Xoá khoa</h1>
+@if (canDelete)
+{
+    <div class="alert alert-warning">Bạn có chắc muốn xoá khoa này?</div>
+}
+else
+{
+    <div class="alert alert-danger">
+        Không xoá được: khoa còn @majorCount ngành và @studentCount sinh viên tham chiếu tới qua khoá ngoại.
+        Hãy chuyển hoặc xoá các ngành, sinh viên này trước.
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.FacultyCode)</dt>
+                    <dd class="col-sm-8 font-monospace">@Model.FacultyCode</dd>
+                    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Name)</dt>
+                    <dd class="col-sm-8 mb-0">@Model.Name</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="FacultyCode" />
+    <button type="submit" class="btn btn-danger" disabled="@(!canDelete)">Xoá</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">Huỷ</a>
+</form>
