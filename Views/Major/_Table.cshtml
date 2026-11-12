@@ -1,0 +1,34 @@
+@model IEnumerable<Major>
+@if (!Model.Any())
+{
+    <div class="alert alert-secondary">Chưa có ngành nào.</div>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.MajorCode)</th>
+                <th>@Html.DisplayNameFor(m => m.Name)</th>
+                <th>@Html.DisplayNameFor(m => m.Faculty)</th>
+                <th class="text-end">Số sinh viên</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="font-monospace">@item.MajorCode</td>
+                    <td>@item.Name</td>
+                    <td>@item.Faculty?.Name</td>
+                    <td class="text-end">@item.Students.Count</td>
+                    <td class="text-end text-nowrap">
+                        <button class="btn btn-sm btn-outline-primary" data-modal="@Url.Action("Form", new { id = item.MajorCode })">Sửa</button>
+                        <button class="btn btn-sm btn-outline-danger" data-delete="@Url.Action("Delete", new { id = item.MajorCode })" data-name="ngành &quot;@item.Name&quot;">Xoá</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

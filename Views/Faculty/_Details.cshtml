@@ -1,0 +1,31 @@
+@model Faculty
+@{
+    Layout = "_ModalDetails";
+    ViewData["Title"] = Model.Name;
+}
+<dl class="row">
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.FacultyCode)</dt>
+    <dd class="col-sm-8 font-monospace">@Model.FacultyCode</dd>
+    <dt class="col-sm-4">Số sinh viên</dt>
+    <dd class="col-sm-8">
+        @ViewBag.StudentCount
+        <a class="ms-2" asp-controller="Student" asp-action="Index" asp-route-facultyCode="@Model.FacultyCode">Xem danh sách</a>
+    </dd>
+</dl>
+<h3 class="h6">Các ngành thuộc khoa</h3>
+@if (Model.Majors.Count == 0)
+{
+    <p class="text-muted mb-0">Chưa có ngành nào.</p>
+}
+else
+{
+    <ul class="mb-0">
+        @foreach (var major in Model.Majors)
+        {
+            <li><span class="font-monospace">@major.MajorCode</span> - @major.Name</li>
+        }
+    </ul>
+}
+@section Footer {
+    <button class="btn btn-primary" data-modal="@Url.Action("Form", new { id = Model.FacultyCode })">Sửa</button>
+}

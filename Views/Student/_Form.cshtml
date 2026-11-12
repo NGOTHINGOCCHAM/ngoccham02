@@ -1,0 +1,66 @@
+@model Student
+@{
+    Layout = "_ModalForm";
+    ViewData["Entity"] = "sinh viên";
+    ViewData["IsEdit"] = Model.Id != 0;
+}
+<input type="hidden" asp-for="Id" />
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 mb-3">
+                <label asp-for="DateOfBirth" class="form-label"></label>
+                <input asp-for="DateOfBirth" class="form-control" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="col-sm-6 mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4 mb-3">
+                <label asp-for="EnrollmentYear" class="form-label"></label>
+                <input asp-for="EnrollmentYear" class="form-control code-part" />
+                <span asp-validation-for="EnrollmentYear" class="text-danger"></span>
+            </div>
+            <div class="col-sm-8 mb-3">
+                <label asp-for="TrainingSystemCode" class="form-label"></label>
+                <select asp-for="TrainingSystemCode" asp-items="ViewBag.TrainingSystems" class="form-select code-part">
+                    <option value="">-- Chọn hệ đào tạo --</option>
+                </select>
+                <span asp-validation-for="TrainingSystemCode" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="MajorCode" class="form-label"></label>
+            @* Ngành được nhóm theo khoa. Khoa của sinh viên tự lấy theo ngành đã chọn *@
+            <select asp-for="MajorCode" asp-items="ViewBag.Majors" class="form-select code-part">
+                <option value="">-- Chọn ngành --</option>
+            </select>
+            <span asp-validation-for="MajorCode" class="text-danger"></span>
+        </div>
+        @if (Model.Id == 0)
+        {
+            <div class="alert alert-info mb-0">
+                Mã sinh viên sẽ được cấp: <strong id="next-code" class="font-monospace">...</strong>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-secondary mb-0">
+                Mã sinh viên hiện tại: <strong class="font-monospace">@Model.StudentCode</strong>.
+                Đổi năm nhập học, hệ hoặc ngành thì mã sẽ được cấp lại.
+            </div>
+        }
+    </div>
+    <div class="col-lg-5">
+        <partial name="_CodeStructure" />
+    </div>
+</div>

@@ -1,72 +1,46 @@
-@model IEnumerable<Student>
 @{
     ViewData["Title"] = "Sinh viên";
+    ViewData["Entity"] = "sinh viên";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="mb-0">Sinh viên</h1>
-    <a class="btn btn-primary" asp-action="Create">+ Thêm sinh viên</a>
-</div>
+<partial name="_CrudPage" />
 
-@if (TempData["Message"] is string message)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @message
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-    </div>
-}
-
-@* Lọc theo khoa: gửi mã khoa qua query string, ví dụ /Student?facultyCode=CNTT *@
-<form asp-action="Index" method="get" class="row g-2 align-items-center mb-3">
+@* Lọc theo khoa: JS gửi kèm mã khoa khi tải lại bảng, ví dụ /Student/List?facultyCode=CNTT *@
+<form id="filterForm" class="row g-2 align-items-center mb-3 order-first">
     <div class="col-sm-6 col-lg-4">
         <select name="facultyCode" class="form-select" asp-items="ViewBag.Faculties" aria-label="Lọc theo khoa">
             <option value="">-- Tất cả các khoa --</option>
         </select>
     </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-outline-primary">Lọc</button>
-    </div>
 </form>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-secondary">Chưa có sinh viên nào. Bấm "Thêm sinh viên" để tạo mới.</div>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>@Html.DisplayNameFor(m => m.StudentCode)</th>
-                    <th>@Html.DisplayNameFor(m => m.FullName)</th>
-                    <th>@Html.DisplayNameFor(m => m.DateOfBirth)</th>
-                    <th>@Html.DisplayNameFor(m => m.Faculty)</th>
-                    <th>@Html.DisplayNameFor(m => m.Major)</th>
-                    <th>@Html.DisplayNameFor(m => m.TrainingSystem)</th>
-                    <th>@Html.DisplayNameFor(m => m.EnrollmentYear)</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td class="font-monospace">@item.StudentCode</td>
-                        <td>@item.FullName</td>
-                        <td>@item.DateOfBirth?.ToString("dd/MM/yyyy")</td>
-                        <td>@item.Faculty?.Name</td>
-                        <td>@item.Major?.Name</td>
-                        <td>@item.TrainingSystem?.Name</td>
-                        <td>@item.EnrollmentYear</td>
-                        <td class="text-end text-nowrap">
-                            <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Id">Chi tiết</a>
-                            <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Sửa</a>
-                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Xoá</a>
-                        </td>
-                    </tr>
+@section Scripts {
+    <script>
+        // Đưa ô lọc khoa lên trên bảng
+        $('#filterForm').insertBefore('#tableContainer');
+
+        // Xem trước mã sinh viên trong modal: mỗi khi đổi năm, hệ hoặc ngành thì hỏi action NextCode
+        (function () {
+            const url = '@Url.Action("NextCode")';
+
+            async function updateNextCode() {
+                const output = document.getElementById('next-code');
+                if (!output) return;
+                const params = new URLSearchParams({
+                    enrollmentYear: $('#EnrollmentYear').val(),
+                    trainingSystemCode: $('#TrainingSystemCode').val(),
+                    majorCode: $('#MajorCode').val()
+                });
+                try {
+                    const data = await (await fetch(url + '?' + params)).json();
+                    output.textContent = data.code ?? 'chọn đủ năm nhập học, hệ và ngành';
+                } catch {
+                    output.textContent = '...';
                 }
-            </tbody>
-        </table>
-    </div>
+            }
+
+            $(document).on('change', '#crudModal .code-part', updateNextCode);
+            $('#crudModal').on('form-loaded', updateNextCode);
+        })();
+    </script>
 }

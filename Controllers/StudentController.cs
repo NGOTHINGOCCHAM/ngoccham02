@@ -7,8 +7,8 @@ using DemoMVC.Models;
 namespace DemoMVC.Controllers;
 
 // CRUD sinh viên: bảng Students có khoá ngoại tới Faculties, Majors, TrainingSystems
-// và mã sinh viên được sinh tự động khi thêm mới
-public class StudentController : Controller
+// và mã sinh viên được sinh tự động khi thêm mới. Từ buổi 11: thao tác trong Modal bằng Ajax
+public class StudentController : AjaxCrudController
 {
     private readonly ApplicationDbContext _context;
 
@@ -17,8 +17,16 @@ public class StudentController : Controller
         _context = context;
     }
 
-    // GET: /Student hoặc /Student?facultyCode=CNTT (lọc theo khoa)
+    // GET: /Student (buổi 11: trang khung, bảng sinh viên nạp bằng Ajax)
     public async Task<IActionResult> Index(string? facultyCode)
+    {
+        var faculties = await _context.Faculties.OrderBy(f => f.Name).ToListAsync();
+        ViewBag.Faculties = new SelectList(faculties, "FacultyCode", "Name", facultyCode);
+        return View();
+    }
+
+    // GET: /Student/List?facultyCode=CNTT (Ajax, lọc theo khoa)
+    public async Task<IActionResult> List(string? facultyCode)
     {
         // Include: lấy kèm dữ liệu của bảng được tham chiếu qua khoá ngoại (JOIN trong SQL)
         var students = _context.Students
@@ -31,20 +39,12 @@ public class StudentController : Controller
         {
             students = students.Where(s => s.FacultyCode == facultyCode);
         }
-
-        var faculties = await _context.Faculties.OrderBy(f => f.Name).ToListAsync();
-        ViewBag.Faculties = new SelectList(faculties, "FacultyCode", "Name", facultyCode);
-        return View(await students.OrderBy(s => s.StudentCode).ToListAsync());
+        return PartialView("_Table", await students.OrderBy(s => s.StudentCode).ToListAsync());
     }
 
-    // GET: /Student/Details/5
-    public async Task<IActionResult> Details(int? id)
+    // GET: /Student/Details/5 (Ajax)
+    public async Task<IActionResult> Details(int id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
         var student = await _context.Students
             .Include(s => s.Faculty)
             .Include(s => s.Major)
@@ -54,31 +54,85 @@ public class StudentController : Controller
         {
             return NotFound();
         }
-        return View(student);
+        return PartialView("_Details", student);
     }
 
-    // GET: /Student/Create
-    public async Task<IActionResult> Create()
+    // GET: /Student/Form hoặc /Student/Form/5 (Ajax)
+    public async Task<IActionResult> Form(int? id)
     {
-        var student = new Student { EnrollmentYear = DateTime.UtcNow.AddHours(7).Year };
+        var student = id == null
+            ? new Student { EnrollmentYear = DateTime.UtcNow.AddHours(7).Year }
+            : await _context.Students.FindAsync(id);
+        if (student == null)
+        {
+            return NotFound();
+        }
         await PopulateDropDownListsAsync(student);
-        return View(student);
+        return PartialView("_Form", student);
     }
 
-    // POST: /Student/Create
-    // Không nhận StudentCode và FacultyCode từ form: mã sinh viên do chương trình sinh, khoa lấy theo ngành
+    // POST: /Student/Save (Ajax). Không nhận StudentCode và FacultyCode từ form:
+    // mã sinh viên do chương trình sinh, khoa lấy theo ngành
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("FullName,DateOfBirth,Email,EnrollmentYear,TrainingSystemCode,MajorCode")] Student student)
+    public async Task<IActionResult> Save([Bind("Id,FullName,DateOfBirth,Email,EnrollmentYear,TrainingSystemCode,MajorCode")] Student input)
     {
-        var major = await CheckForeignKeysAsync(student);
-        if (!ModelState.IsValid)
+        Student? student = null;
+        if (input.Id != 0)
         {
-            await PopulateDropDownListsAsync(student);
-            return View(student);
+            // Lấy bản ghi đang có trong CSDL để giữ nguyên mã sinh viên
+            student = await _context.Students.FindAsync(input.Id);
+            if (student == null)
+            {
+                return JsonFail("Sinh viên không còn tồn tại.");
+            }
+            input.StudentCode = student.StudentCode;
         }
 
+        var major = await CheckForeignKeysAsync(input);
+        if (!ModelState.IsValid)
+        {
+            await PopulateDropDownListsAsync(input);
+            return FormWithErrors(input);
+        }
+
+        if (student == null)
+        {
+            return await CreateAsync(input, major!);
+        }
+
+        // Năm nhập học, hệ hoặc ngành nằm trong mã sinh viên, nên đổi một trong ba thì cấp lại mã
+        var codeChanged = CodePrefix(input.EnrollmentYear, input.TrainingSystemCode, input.MajorCode)
+            != CodePrefix(student.EnrollmentYear, student.TrainingSystemCode, student.MajorCode);
+        if (codeChanged)
+        {
+            var code = await GenerateStudentCodeAsync(input.EnrollmentYear, input.TrainingSystemCode, input.MajorCode);
+            if (code == null)
+            {
+                ModelState.AddModelError(string.Empty, "Đã dùng hết số thứ tự (9999) cho năm, hệ và ngành này.");
+                await PopulateDropDownListsAsync(input);
+                return FormWithErrors(input);
+            }
+            student.StudentCode = code;
+        }
+
+        student.FullName = input.FullName;
+        student.DateOfBirth = input.DateOfBirth;
+        student.Email = input.Email;
+        student.EnrollmentYear = input.EnrollmentYear;
+        student.TrainingSystemCode = input.TrainingSystemCode;
+        student.MajorCode = input.MajorCode;
         student.FacultyCode = major!.FacultyCode;
+        await _context.SaveChangesAsync();
+
+        return JsonOk(codeChanged
+            ? $"Đã cập nhật sinh viên \"{student.FullName}\", mã sinh viên mới là {student.StudentCode}."
+            : $"Đã cập nhật sinh viên \"{student.FullName}\".");
+    }
+
+    private async Task<IActionResult> CreateAsync(Student student, Major major)
+    {
+        student.FacultyCode = major.FacultyCode;
         _context.Add(student);
 
         // Hai người thêm cùng lúc có thể nhận trùng mã. Khi đó chỉ mục UNIQUE của cột StudentCode
@@ -88,9 +142,10 @@ public class StudentController : Controller
             var code = await GenerateStudentCodeAsync(student.EnrollmentYear, student.TrainingSystemCode, student.MajorCode);
             if (code == null)
             {
+                _context.Entry(student).State = EntityState.Detached;
                 ModelState.AddModelError(string.Empty, "Đã dùng hết số thứ tự (9999) cho năm, hệ và ngành này.");
                 await PopulateDropDownListsAsync(student);
-                return View(student);
+                return FormWithErrors(student);
             }
             student.StudentCode = code;
 
@@ -105,117 +160,23 @@ public class StudentController : Controller
         }
 
         var nextCode = await GenerateStudentCodeAsync(student.EnrollmentYear, student.TrainingSystemCode, student.MajorCode);
-        TempData["Message"] = $"Đã thêm sinh viên \"{student.FullName}\" với mã {student.StudentCode}. "
-            + $"Sinh viên tiếp theo cùng năm, hệ và ngành sẽ có mã {nextCode}.";
-        return RedirectToAction(nameof(Index));
+        return JsonOk($"Đã thêm sinh viên \"{student.FullName}\" với mã {student.StudentCode}. "
+            + $"Sinh viên tiếp theo cùng năm, hệ và ngành sẽ có mã {nextCode}.");
     }
 
-    // GET: /Student/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var student = await _context.Students.FindAsync(id);
-        if (student == null)
-        {
-            return NotFound();
-        }
-        await PopulateDropDownListsAsync(student);
-        return View(student);
-    }
-
-    // POST: /Student/Edit/5
+    // POST: /Student/Delete/5 (Ajax)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,DateOfBirth,Email,EnrollmentYear,TrainingSystemCode,MajorCode")] Student input)
+    public async Task<IActionResult> Delete(int id)
     {
-        if (id != input.Id)
-        {
-            return NotFound();
-        }
-
-        // Lấy bản ghi đang có trong CSDL để giữ nguyên mã sinh viên (không gửi từ form)
         var student = await _context.Students.FindAsync(id);
         if (student == null)
         {
-            return NotFound();
+            return JsonFail("Sinh viên không còn tồn tại.");
         }
-
-        var major = await CheckForeignKeysAsync(input);
-        if (!ModelState.IsValid)
-        {
-            input.StudentCode = student.StudentCode;
-            await PopulateDropDownListsAsync(input);
-            return View(input);
-        }
-
-        // Năm nhập học, hệ hoặc ngành nằm trong mã sinh viên, nên đổi một trong ba thì cấp lại mã
-        var codeChanged = CodePrefix(input.EnrollmentYear, input.TrainingSystemCode, input.MajorCode)
-            != CodePrefix(student.EnrollmentYear, student.TrainingSystemCode, student.MajorCode);
-        if (codeChanged)
-        {
-            var code = await GenerateStudentCodeAsync(input.EnrollmentYear, input.TrainingSystemCode, input.MajorCode);
-            if (code == null)
-            {
-                ModelState.AddModelError(string.Empty, "Đã dùng hết số thứ tự (9999) cho năm, hệ và ngành này.");
-                input.StudentCode = student.StudentCode;
-                await PopulateDropDownListsAsync(input);
-                return View(input);
-            }
-            student.StudentCode = code;
-        }
-
-        student.FullName = input.FullName;
-        student.DateOfBirth = input.DateOfBirth;
-        student.Email = input.Email;
-        student.EnrollmentYear = input.EnrollmentYear;
-        student.TrainingSystemCode = input.TrainingSystemCode;
-        student.MajorCode = input.MajorCode;
-        student.FacultyCode = major!.FacultyCode;
+        _context.Students.Remove(student);
         await _context.SaveChangesAsync();
-
-        TempData["Message"] = codeChanged
-            ? $"Đã cập nhật sinh viên \"{student.FullName}\", mã sinh viên mới là {student.StudentCode}."
-            : $"Đã cập nhật sinh viên \"{student.FullName}\".";
-        return RedirectToAction(nameof(Index));
-    }
-
-    // GET: /Student/Delete/5 (trang xác nhận xoá)
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var student = await _context.Students
-            .Include(s => s.Faculty)
-            .Include(s => s.Major)
-            .Include(s => s.TrainingSystem)
-            .FirstOrDefaultAsync(s => s.Id == id);
-        if (student == null)
-        {
-            return NotFound();
-        }
-        return View(student);
-    }
-
-    // POST: /Student/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var student = await _context.Students.FindAsync(id);
-        if (student != null)
-        {
-            _context.Students.Remove(student);
-            await _context.SaveChangesAsync();
-            TempData["Message"] = $"Đã xoá sinh viên \"{student.FullName}\" ({student.StudentCode}).";
-        }
-        return RedirectToAction(nameof(Index));
+        return JsonOk($"Đã xoá sinh viên \"{student.FullName}\" ({student.StudentCode}).");
     }
 
     // GET: /Student/NextCode?enrollmentYear=2028&trainingSystemCode=21&majorCode=05

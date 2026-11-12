@@ -6,8 +6,8 @@ using DemoMVC.Models;
 
 namespace DemoMVC.Controllers;
 
-// CRUD ngành. Mỗi ngành thuộc một khoa (khoá ngoại FacultyCode), chọn khoa bằng ô chọn
-public class MajorController : Controller
+// CRUD ngành bằng Modal + Ajax (buổi 11). Mỗi ngành thuộc một khoa (khoá ngoại FacultyCode)
+public class MajorController : AjaxCrudController
 {
     private readonly ApplicationDbContext _context;
 
@@ -16,160 +16,99 @@ public class MajorController : Controller
         _context = context;
     }
 
-    // GET: /Major
-    public async Task<IActionResult> Index()
+    public IActionResult Index() => View();
+
+    public async Task<IActionResult> List()
     {
         var majors = await _context.Majors
             .Include(m => m.Faculty)
+            .Include(m => m.Students)
             .OrderBy(m => m.MajorCode)
             .ToListAsync();
-        return View(majors);
+        return PartialView("_Table", majors);
     }
 
-    // GET: /Major/Create
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> Form(string? id)
     {
-        await PopulateFacultiesAsync(null);
-        return View();
+        var major = id == null ? new Major() : await _context.Majors.FindAsync(id);
+        if (major == null)
+        {
+            return NotFound();
+        }
+        ViewData["IsEdit"] = id != null;
+        await PopulateFacultiesAsync(major.FacultyCode);
+        return PartialView("_Form", major);
     }
 
-    // POST: /Major/Create
+    // isEdit gửi từ ô ẩn trong form: mã ngành là khoá chính nên khi sửa không đổi được mã
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("MajorCode,Name,FacultyCode")] Major major)
+    public async Task<IActionResult> Save(bool isEdit, [Bind("MajorCode,Name,FacultyCode")] Major input)
     {
-        if (ModelState.IsValid && await _context.Majors.AnyAsync(m => m.MajorCode == major.MajorCode))
+        var existing = ModelState.IsValid ? await _context.Majors.FindAsync(input.MajorCode) : null;
+        if (!isEdit && existing != null)
         {
             ModelState.AddModelError(nameof(Major.MajorCode), "Mã ngành đã tồn tại");
         }
-        await CheckFacultyAsync(major);
-        if (!ModelState.IsValid)
-        {
-            await PopulateFacultiesAsync(major.FacultyCode);
-            return View(major);
-        }
-
-        _context.Add(major);
-        await _context.SaveChangesAsync();
-
-        TempData["Message"] = $"Đã thêm ngành \"{major.Name}\".";
-        return RedirectToAction(nameof(Index));
-    }
-
-    // GET: /Major/Edit/05
-    public async Task<IActionResult> Edit(string? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var major = await _context.Majors.FindAsync(id);
-        if (major == null)
-        {
-            return NotFound();
-        }
-        await PopulateFacultiesAsync(major.FacultyCode);
-        return View(major);
-    }
-
-    // POST: /Major/Edit/05
-    // Mã ngành là khoá chính nên không sửa được, chỉ sửa tên và khoa
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string id, [Bind("MajorCode,Name,FacultyCode")] Major major)
-    {
-        if (id != major.MajorCode)
-        {
-            return NotFound();
-        }
-
-        await CheckFacultyAsync(major);
-        if (!ModelState.IsValid)
-        {
-            await PopulateFacultiesAsync(major.FacultyCode);
-            return View(major);
-        }
-
-        if (!await _context.Majors.AnyAsync(m => m.MajorCode == major.MajorCode))
-        {
-            return NotFound();
-        }
-
-        // Ngành chuyển sang khoa khác thì sinh viên của ngành cũng chuyển theo,
-        // để cột Students.FacultyCode luôn khớp với khoa của ngành. Cả hai được lưu trong một lần SaveChanges
-        var students = await _context.Students
-            .Where(s => s.MajorCode == major.MajorCode && s.FacultyCode != major.FacultyCode)
-            .ToListAsync();
-        foreach (var student in students)
-        {
-            student.FacultyCode = major.FacultyCode;
-        }
-
-        _context.Update(major);
-        await _context.SaveChangesAsync();
-
-        TempData["Message"] = $"Đã cập nhật ngành \"{major.Name}\".";
-        return RedirectToAction(nameof(Index));
-    }
-
-    // GET: /Major/Delete/05 (trang xác nhận xoá)
-    public async Task<IActionResult> Delete(string? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var major = await _context.Majors
-            .Include(m => m.Faculty)
-            .FirstOrDefaultAsync(m => m.MajorCode == id);
-        if (major == null)
-        {
-            return NotFound();
-        }
-
-        ViewBag.StudentCount = await _context.Students.CountAsync(s => s.MajorCode == id);
-        return View(major);
-    }
-
-    // POST: /Major/Delete/05
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(string id)
-    {
-        var major = await _context.Majors.FindAsync(id);
-        if (major == null)
-        {
-            return RedirectToAction(nameof(Index));
-        }
-
-        if (await _context.Students.AnyAsync(s => s.MajorCode == id))
-        {
-            TempData["Error"] = $"Không xoá được ngành \"{major.Name}\" vì ngành vẫn còn sinh viên.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        _context.Majors.Remove(major);
-        await _context.SaveChangesAsync();
-        TempData["Message"] = $"Đã xoá ngành \"{major.Name}\".";
-        return RedirectToAction(nameof(Index));
-    }
-
-    // Mã khoa gửi lên phải có trong bảng Khoa
-    private async Task CheckFacultyAsync(Major major)
-    {
-        if (!string.IsNullOrEmpty(major.FacultyCode)
-            && !await _context.Faculties.AnyAsync(f => f.FacultyCode == major.FacultyCode))
+        if (ModelState.IsValid && !await _context.Faculties.AnyAsync(f => f.FacultyCode == input.FacultyCode))
         {
             ModelState.AddModelError(nameof(Major.FacultyCode), "Khoa không tồn tại");
         }
+        if (!ModelState.IsValid)
+        {
+            ViewData["IsEdit"] = isEdit;
+            await PopulateFacultiesAsync(input.FacultyCode);
+            return FormWithErrors(input);
+        }
+
+        if (!isEdit)
+        {
+            _context.Add(input);
+            await _context.SaveChangesAsync();
+            return JsonOk($"Đã thêm ngành \"{input.Name}\".");
+        }
+        if (existing == null)
+        {
+            return JsonFail("Ngành không còn tồn tại.");
+        }
+
+        // Ngành chuyển sang khoa khác thì sinh viên của ngành cũng chuyển theo,
+        // để cột Students.FacultyCode luôn khớp với khoa của ngành
+        if (existing.FacultyCode != input.FacultyCode)
+        {
+            var students = await _context.Students.Where(s => s.MajorCode == input.MajorCode).ToListAsync();
+            foreach (var student in students)
+            {
+                student.FacultyCode = input.FacultyCode;
+            }
+        }
+        existing.Name = input.Name;
+        existing.FacultyCode = input.FacultyCode;
+        await _context.SaveChangesAsync();
+        return JsonOk($"Đã cập nhật ngành \"{existing.Name}\".");
     }
 
-    // Danh sách khoa cho ô chọn khoá ngoại
-    private async Task PopulateFacultiesAsync(string? selectedFacultyCode)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var major = await _context.Majors.FindAsync(id);
+        if (major == null)
+        {
+            return JsonFail("Ngành không còn tồn tại.");
+        }
+        if (await _context.Students.AnyAsync(s => s.MajorCode == id))
+        {
+            return JsonFail($"Không xoá được ngành \"{major.Name}\" vì ngành vẫn còn sinh viên.");
+        }
+        _context.Majors.Remove(major);
+        await _context.SaveChangesAsync();
+        return JsonOk($"Đã xoá ngành \"{major.Name}\".");
+    }
+
+    private async Task PopulateFacultiesAsync(string? selected)
     {
         var faculties = await _context.Faculties.OrderBy(f => f.Name).ToListAsync();
-        ViewBag.Faculties = new SelectList(faculties, "FacultyCode", "Name", selectedFacultyCode);
+        ViewBag.Faculties = new SelectList(faculties, "FacultyCode", "Name", selected);
     }
 }

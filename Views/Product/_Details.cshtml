@@ -1,0 +1,16 @@
+@model Product
+@{
+    Layout = "_ModalDetails";
+    ViewData["Title"] = Model.Name;
+}
+<dl class="row mb-0">
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Name)</dt>
+    <dd class="col-sm-8">@Model.Name</dd>
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Price)</dt>
+    <dd class="col-sm-8">@Model.Price.ToString("#,##0.##") ₫</dd>
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.CreatedAt)</dt>
+    <dd class="col-sm-8 mb-0">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+</dl>
+@section Footer {
+    <button class="btn btn-primary" data-modal="@Url.Action("Form", new { id = Model.Id })">Sửa</button>
+}

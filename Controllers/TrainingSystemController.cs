@@ -5,8 +5,8 @@ using DemoMVC.Models;
 
 namespace DemoMVC.Controllers;
 
-// CRUD hệ đào tạo (ví dụ 21 = Đại học chính quy)
-public class TrainingSystemController : Controller
+// CRUD hệ đào tạo bằng Modal + Ajax (buổi 11). Hệ đang có sinh viên thì không xoá được
+public class TrainingSystemController : AjaxCrudController
 {
     private readonly ApplicationDbContext _context;
 
@@ -15,130 +15,78 @@ public class TrainingSystemController : Controller
         _context = context;
     }
 
-    // GET: /TrainingSystem
-    public async Task<IActionResult> Index()
+    public IActionResult Index() => View();
+
+    public async Task<IActionResult> List()
     {
-        var trainingSystems = await _context.TrainingSystems
+        var items = await _context.TrainingSystems
+            .Include(t => t.Students)
             .OrderBy(t => t.TrainingSystemCode)
             .ToListAsync();
-        return View(trainingSystems);
+        return PartialView("_Table", items);
     }
 
-    // GET: /TrainingSystem/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Form(string? id)
     {
-        return View();
+        if (id == null)
+        {
+            return PartialView("_Form", new TrainingSystem());
+        }
+        var item = await _context.TrainingSystems.FindAsync(id);
+        if (item == null)
+        {
+            return NotFound();
+        }
+        ViewData["IsEdit"] = true;
+        return PartialView("_Form", item);
     }
 
-    // POST: /TrainingSystem/Create
+    // isEdit gửi từ ô ẩn trong form: mã hệ là khoá chính nên khi sửa không đổi được mã
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TrainingSystemCode,Name")] TrainingSystem trainingSystem)
+    public async Task<IActionResult> Save(bool isEdit, [Bind("TrainingSystemCode,Name")] TrainingSystem input)
     {
-        if (ModelState.IsValid && await _context.TrainingSystems.AnyAsync(t => t.TrainingSystemCode == trainingSystem.TrainingSystemCode))
+        var existing = ModelState.IsValid ? await _context.TrainingSystems.FindAsync(input.TrainingSystemCode) : null;
+        if (!isEdit && existing != null)
         {
             ModelState.AddModelError(nameof(TrainingSystem.TrainingSystemCode), "Mã hệ đào tạo đã tồn tại");
         }
         if (!ModelState.IsValid)
         {
-            return View(trainingSystem);
+            ViewData["IsEdit"] = isEdit;
+            return FormWithErrors(input);
         }
 
-        _context.Add(trainingSystem);
+        if (!isEdit)
+        {
+            _context.Add(input);
+            await _context.SaveChangesAsync();
+            return JsonOk($"Đã thêm hệ \"{input.Name}\".");
+        }
+        if (existing == null)
+        {
+            return JsonFail("Hệ đào tạo không còn tồn tại.");
+        }
+        existing.Name = input.Name;
         await _context.SaveChangesAsync();
-
-        TempData["Message"] = $"Đã thêm hệ \"{trainingSystem.Name}\".";
-        return RedirectToAction(nameof(Index));
+        return JsonOk($"Đã cập nhật hệ \"{existing.Name}\".");
     }
 
-    // GET: /TrainingSystem/Edit/21
-    public async Task<IActionResult> Edit(string? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var trainingSystem = await _context.TrainingSystems.FindAsync(id);
-        if (trainingSystem == null)
-        {
-            return NotFound();
-        }
-        return View(trainingSystem);
-    }
-
-    // POST: /TrainingSystem/Edit/21
-    // Mã hệ là khoá chính nên không sửa được, chỉ sửa tên
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string id, [Bind("TrainingSystemCode,Name")] TrainingSystem trainingSystem)
+    public async Task<IActionResult> Delete(string id)
     {
-        if (id != trainingSystem.TrainingSystemCode)
+        var item = await _context.TrainingSystems.FindAsync(id);
+        if (item == null)
         {
-            return NotFound();
+            return JsonFail("Hệ đào tạo không còn tồn tại.");
         }
-
-        if (!ModelState.IsValid)
-        {
-            return View(trainingSystem);
-        }
-
-        try
-        {
-            _context.Update(trainingSystem);
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!await _context.TrainingSystems.AnyAsync(t => t.TrainingSystemCode == trainingSystem.TrainingSystemCode))
-            {
-                return NotFound();
-            }
-            throw;
-        }
-
-        TempData["Message"] = $"Đã cập nhật hệ \"{trainingSystem.Name}\".";
-        return RedirectToAction(nameof(Index));
-    }
-
-    // GET: /TrainingSystem/Delete/21 (trang xác nhận xoá)
-    public async Task<IActionResult> Delete(string? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var trainingSystem = await _context.TrainingSystems.FindAsync(id);
-        if (trainingSystem == null)
-        {
-            return NotFound();
-        }
-
-        ViewBag.StudentCount = await _context.Students.CountAsync(s => s.TrainingSystemCode == id);
-        return View(trainingSystem);
-    }
-
-    // POST: /TrainingSystem/Delete/21
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(string id)
-    {
-        var trainingSystem = await _context.TrainingSystems.FindAsync(id);
-        if (trainingSystem == null)
-        {
-            return RedirectToAction(nameof(Index));
-        }
-
         if (await _context.Students.AnyAsync(s => s.TrainingSystemCode == id))
         {
-            TempData["Error"] = $"Không xoá được hệ \"{trainingSystem.Name}\" vì vẫn còn sinh viên thuộc hệ này.";
-            return RedirectToAction(nameof(Index));
+            return JsonFail($"Không xoá được \"{item.Name}\" vì đã có sinh viên thuộc hệ này.");
         }
-
-        _context.TrainingSystems.Remove(trainingSystem);
+        _context.TrainingSystems.Remove(item);
         await _context.SaveChangesAsync();
-        TempData["Message"] = $"Đã xoá hệ \"{trainingSystem.Name}\".";
-        return RedirectToAction(nameof(Index));
+        return JsonOk($"Đã xoá hệ \"{item.Name}\".");
     }
 }

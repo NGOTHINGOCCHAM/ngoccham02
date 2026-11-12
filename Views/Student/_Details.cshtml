@@ -1,0 +1,26 @@
+@model Student
+@{
+    Layout = "_ModalDetails";
+    ViewData["Title"] = Model.FullName;
+}
+<dl class="row mb-0">
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.StudentCode)</dt>
+    <dd class="col-sm-8 font-monospace">@Model.StudentCode</dd>
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.FullName)</dt>
+    <dd class="col-sm-8">@Model.FullName</dd>
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.DateOfBirth)</dt>
+    <dd class="col-sm-8">@Model.DateOfBirth?.ToString("dd/MM/yyyy")</dd>
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Email)</dt>
+    <dd class="col-sm-8">@Model.Email</dd>
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.EnrollmentYear)</dt>
+    <dd class="col-sm-8">@Model.EnrollmentYear</dd>
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.TrainingSystem)</dt>
+    <dd class="col-sm-8">@Model.TrainingSystemCode - @Model.TrainingSystem?.Name</dd>
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Major)</dt>
+    <dd class="col-sm-8">@Model.MajorCode - @Model.Major?.Name</dd>
+    <dt class="col-sm-4">@Html.DisplayNameFor(m => m.Faculty)</dt>
+    <dd class="col-sm-8 mb-0">@Model.Faculty?.Name</dd>
+</dl>
+@section Footer {
+    <button class="btn btn-primary" data-modal="@Url.Action("Form", new { id = Model.Id })">Sửa</button>
+}

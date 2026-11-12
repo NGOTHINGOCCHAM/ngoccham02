@@ -1,0 +1,18 @@
+@model TrainingSystem
+@{
+    Layout = "_ModalForm";
+    ViewData["Entity"] = "hệ đào tạo";
+    var isEdit = (bool)(ViewData["IsEdit"] ?? false);
+}
+<input type="hidden" name="isEdit" value="@isEdit.ToString().ToLower()" />
+<div class="mb-3">
+    <label asp-for="TrainingSystemCode" class="form-label"></label>
+    <input asp-for="TrainingSystemCode" class="form-control font-monospace" maxlength="2" readonly="@isEdit" />
+    <span asp-validation-for="TrainingSystemCode" class="text-danger"></span>
+    @if (isEdit) { <div class="form-text">Mã hệ là khoá chính nên không sửa được.</div> }
+</div>
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
