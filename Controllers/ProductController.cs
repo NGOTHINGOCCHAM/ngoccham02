@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Data;
+using DemoMVC.Helpers;
 using DemoMVC.Models;
 
 namespace DemoMVC.Controllers;
@@ -18,13 +19,18 @@ public class ProductController : AjaxCrudController
     // GET: /Product
     public IActionResult Index() => View();
 
-    // GET: /Product/List (Ajax)
-    public async Task<IActionResult> List()
+    // GET: /Product/List?q=bút&page=2&pageSize=10 (Ajax). Buổi 12: tìm theo tên sản phẩm, phân trang
+    public async Task<IActionResult> List(string? q, int page = 1, int pageSize = PagedList<object>.DefaultPageSize)
     {
-        var products = await _context.Products
-            .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
-        return PartialView("_Table", products);
+        var products = _context.Products.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            q = q.Trim();
+            products = products.Where(p => p.Name.Contains(q));
+        }
+        var model = await PagedList<Product>.CreateAsync(
+            products.OrderByDescending(p => p.CreatedAt).ThenByDescending(p => p.Id), page, pageSize, q);
+        return PartialView("_Table", model);
     }
 
     // GET: /Product/Details/5 (Ajax)

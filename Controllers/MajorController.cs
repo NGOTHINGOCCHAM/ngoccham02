@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Data;
+using DemoMVC.Helpers;
 using DemoMVC.Models;
 
 namespace DemoMVC.Controllers;
@@ -18,14 +19,20 @@ public class MajorController : AjaxCrudController
 
     public IActionResult Index() => View();
 
-    public async Task<IActionResult> List()
+    // Buổi 12: tìm theo mã ngành, tên ngành hoặc tên khoa, phân trang
+    public async Task<IActionResult> List(string? q, int page = 1, int pageSize = PagedList<object>.DefaultPageSize)
     {
-        var majors = await _context.Majors
+        var majors = _context.Majors
             .Include(m => m.Faculty)
             .Include(m => m.Students)
-            .OrderBy(m => m.MajorCode)
-            .ToListAsync();
-        return PartialView("_Table", majors);
+            .AsQueryable();
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            q = q.Trim();
+            majors = majors.Where(m => m.MajorCode.Contains(q) || m.Name.Contains(q) || m.Faculty!.Name.Contains(q));
+        }
+        var model = await PagedList<Major>.CreateAsync(majors.OrderBy(m => m.MajorCode), page, pageSize, q);
+        return PartialView("_Table", model);
     }
 
     public async Task<IActionResult> Form(string? id)

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Data;
+using DemoMVC.Helpers;
 using DemoMVC.Models;
 
 namespace DemoMVC.Controllers;
@@ -25,8 +26,9 @@ public class StudentController : AjaxCrudController
         return View();
     }
 
-    // GET: /Student/List?facultyCode=CNTT (Ajax, lọc theo khoa)
-    public async Task<IActionResult> List(string? facultyCode)
+    // GET: /Student/List?q=nguyen&facultyCode=CNTT&page=1 (Ajax)
+    // Buổi 12: tìm theo mã SV, họ tên, email; lọc theo khoa; phân trang
+    public async Task<IActionResult> List(string? facultyCode, string? q, int page = 1, int pageSize = PagedList<object>.DefaultPageSize)
     {
         // Include: lấy kèm dữ liệu của bảng được tham chiếu qua khoá ngoại (JOIN trong SQL)
         var students = _context.Students
@@ -39,7 +41,15 @@ public class StudentController : AjaxCrudController
         {
             students = students.Where(s => s.FacultyCode == facultyCode);
         }
-        return PartialView("_Table", await students.OrderBy(s => s.StudentCode).ToListAsync());
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            q = q.Trim();
+            students = students.Where(s => s.StudentCode.Contains(q)
+                || s.FullName.Contains(q)
+                || (s.Email != null && s.Email.Contains(q)));
+        }
+        var model = await PagedList<Student>.CreateAsync(students.OrderBy(s => s.StudentCode), page, pageSize, q);
+        return PartialView("_Table", model);
     }
 
     // GET: /Student/Details/5 (Ajax)

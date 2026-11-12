@@ -1,7 +1,7 @@
-@model IEnumerable<Student>
+@model DemoMVC.Helpers.PagedList<Student>
 @if (!Model.Any())
 {
-    <div class="alert alert-secondary">Chưa có sinh viên nào. Bấm "Thêm sinh viên" để tạo mới.</div>
+    <div class="alert alert-secondary">@(string.IsNullOrEmpty(Model.Keyword) ? "Chưa có sinh viên nào. Bấm \"Thêm sinh viên\" để tạo mới." : $"Không tìm thấy kết quả nào khớp với \"{Model.Keyword}\".")</div>
 }
 else
 {
@@ -9,13 +9,13 @@ else
         <table class="table table-hover align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.StudentCode)</th>
-                    <th>@Html.DisplayNameFor(m => m.FullName)</th>
-                    <th>@Html.DisplayNameFor(m => m.DateOfBirth)</th>
-                    <th>@Html.DisplayNameFor(m => m.Faculty)</th>
-                    <th>@Html.DisplayNameFor(m => m.Major)</th>
-                    <th>@Html.DisplayNameFor(m => m.TrainingSystem)</th>
-                    <th>@Html.DisplayNameFor(m => m.EnrollmentYear)</th>
+                    <th>@Html.DisplayNameForInnerType((Student m) => m.StudentCode)</th>
+                    <th>@Html.DisplayNameForInnerType((Student m) => m.FullName)</th>
+                    <th>@Html.DisplayNameForInnerType((Student m) => m.DateOfBirth)</th>
+                    <th>@Html.DisplayNameForInnerType((Student m) => m.Faculty)</th>
+                    <th>@Html.DisplayNameForInnerType((Student m) => m.Major)</th>
+                    <th>@Html.DisplayNameForInnerType((Student m) => m.TrainingSystem)</th>
+                    <th>@Html.DisplayNameForInnerType((Student m) => m.EnrollmentYear)</th>
                     <th></th>
                 </tr>
             </thead>
@@ -41,3 +41,4 @@ else
         </table>
     </div>
 }
+<partial name="_Pager" model="Model" />

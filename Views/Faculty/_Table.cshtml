@@ -1,9 +1,15 @@
-@model IEnumerable<Faculty>
+@model DemoMVC.Helpers.PagedList<Faculty>
+@if (!Model.Any())
+{
+    <div class="alert alert-secondary">@(string.IsNullOrEmpty(Model.Keyword) ? "Chưa có khoa nào." : $"Không tìm thấy kết quả nào khớp với \"{Model.Keyword}\".")</div>
+}
+else
+{
 <table class="table table-hover align-middle">
     <thead class="table-light">
         <tr>
-            <th>@Html.DisplayNameFor(m => m.FacultyCode)</th>
-            <th>@Html.DisplayNameFor(m => m.Name)</th>
+            <th>@Html.DisplayNameForInnerType((Faculty m) => m.FacultyCode)</th>
+            <th>@Html.DisplayNameForInnerType((Faculty m) => m.Name)</th>
             <th class="text-end">Số ngành</th>
             <th class="text-end">Số sinh viên</th>
             <th></th>
@@ -26,3 +32,5 @@
         }
     </tbody>
 </table>
+}
+<partial name="_Pager" model="Model" />

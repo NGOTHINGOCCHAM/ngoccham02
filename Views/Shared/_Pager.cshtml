@@ -1,0 +1,41 @@
+@model DemoMVC.Helpers.IPagedList
+@* Buổi 12: thanh phân trang. crud.js bắt sự kiện click vào [data-page] để tải trang bằng Ajax *@
+@{
+    var from = Model.TotalCount == 0 ? 0 : (Model.PageIndex - 1) * Model.PageSize + 1;
+    var to = Math.Min(Model.PageIndex * Model.PageSize, Model.TotalCount);
+    var start = Math.Max(1, Model.PageIndex - 2);
+    var end = Math.Min(Model.TotalPages, Model.PageIndex + 2);
+    string Disabled(bool d) => d ? "disabled" : "";
+}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div class="text-muted small">
+        Hiển thị @from–@to trong tổng số @Model.TotalCount dòng
+        @if (!string.IsNullOrEmpty(Model.Keyword))
+        {
+            <span>khớp với "<strong>@Model.Keyword</strong>"</span>
+        }
+    </div>
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Phân trang">
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item @Disabled(Model.PageIndex == 1)"><a class="page-link" href="#" data-page="1" aria-label="Trang đầu">&laquo;</a></li>
+                <li class="page-item @Disabled(Model.PageIndex == 1)"><a class="page-link" href="#" data-page="@(Model.PageIndex - 1)" aria-label="Trang trước">&lsaquo;</a></li>
+                @if (start > 1)
+                {
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                }
+                @for (var i = start; i <= end; i++)
+                {
+                    <li class="page-item @(i == Model.PageIndex ? "active" : "")"><a class="page-link" href="#" data-page="@i">@i</a></li>
+                }
+                @if (end < Model.TotalPages)
+                {
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                }
+                <li class="page-item @Disabled(Model.PageIndex == Model.TotalPages)"><a class="page-link" href="#" data-page="@(Model.PageIndex + 1)" aria-label="Trang sau">&rsaquo;</a></li>
+                <li class="page-item @Disabled(Model.PageIndex == Model.TotalPages)"><a class="page-link" href="#" data-page="@Model.TotalPages" aria-label="Trang cuối">&raquo;</a></li>
+            </ul>
+        </nav>
+    }
+</div>

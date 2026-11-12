@@ -1,24 +1,14 @@
 @{
     ViewData["Title"] = "Sinh viên";
+    ViewData["SearchHint"] = "Tìm theo mã SV, họ tên, email...";
     ViewData["Entity"] = "sinh viên";
+    ViewData["FilterPartial"] = "_FacultyFilter";
 }
 
 <partial name="_CrudPage" />
 
-@* Lọc theo khoa: JS gửi kèm mã khoa khi tải lại bảng, ví dụ /Student/List?facultyCode=CNTT *@
-<form id="filterForm" class="row g-2 align-items-center mb-3 order-first">
-    <div class="col-sm-6 col-lg-4">
-        <select name="facultyCode" class="form-select" asp-items="ViewBag.Faculties" aria-label="Lọc theo khoa">
-            <option value="">-- Tất cả các khoa --</option>
-        </select>
-    </div>
-</form>
-
 @section Scripts {
     <script>
-        // Đưa ô lọc khoa lên trên bảng
-        $('#filterForm').insertBefore('#tableContainer');
-
         // Xem trước mã sinh viên trong modal: mỗi khi đổi năm, hệ hoặc ngành thì hỏi action NextCode
         (function () {
             const url = '@Url.Action("NextCode")';

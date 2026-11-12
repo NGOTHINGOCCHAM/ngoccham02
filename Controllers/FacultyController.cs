@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Data;
+using DemoMVC.Helpers;
 using DemoMVC.Models;
 
 namespace DemoMVC.Controllers;
@@ -17,14 +18,20 @@ public class FacultyController : AjaxCrudController
 
     public IActionResult Index() => View();
 
-    public async Task<IActionResult> List()
+    // Buổi 12: tìm theo mã hoặc tên khoa, phân trang
+    public async Task<IActionResult> List(string? q, int page = 1, int pageSize = PagedList<object>.DefaultPageSize)
     {
-        var faculties = await _context.Faculties
+        var faculties = _context.Faculties
             .Include(f => f.Majors)
             .Include(f => f.Students)
-            .OrderBy(f => f.Name)
-            .ToListAsync();
-        return PartialView("_Table", faculties);
+            .AsQueryable();
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            q = q.Trim();
+            faculties = faculties.Where(f => f.FacultyCode.Contains(q) || f.Name.Contains(q));
+        }
+        var model = await PagedList<Faculty>.CreateAsync(faculties.OrderBy(f => f.Name), page, pageSize, q);
+        return PartialView("_Table", model);
     }
 
     public async Task<IActionResult> Details(string id)

@@ -1,16 +1,16 @@
-@model IEnumerable<Major>
+@model DemoMVC.Helpers.PagedList<Major>
 @if (!Model.Any())
 {
-    <div class="alert alert-secondary">Chưa có ngành nào.</div>
+    <div class="alert alert-secondary">@(string.IsNullOrEmpty(Model.Keyword) ? "Chưa có ngành nào." : $"Không tìm thấy kết quả nào khớp với \"{Model.Keyword}\".")</div>
 }
 else
 {
     <table class="table table-hover align-middle">
         <thead class="table-light">
             <tr>
-                <th>@Html.DisplayNameFor(m => m.MajorCode)</th>
-                <th>@Html.DisplayNameFor(m => m.Name)</th>
-                <th>@Html.DisplayNameFor(m => m.Faculty)</th>
+                <th>@Html.DisplayNameForInnerType((Major m) => m.MajorCode)</th>
+                <th>@Html.DisplayNameForInnerType((Major m) => m.Name)</th>
+                <th>@Html.DisplayNameForInnerType((Major m) => m.Faculty)</th>
                 <th class="text-end">Số sinh viên</th>
                 <th></th>
             </tr>
@@ -32,3 +32,4 @@ else
         </tbody>
     </table>
 }
+<partial name="_Pager" model="Model" />

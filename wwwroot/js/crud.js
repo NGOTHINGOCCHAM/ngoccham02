@@ -22,11 +22,14 @@
         return fallback;
     }
 
-    // Tải lại bảng dữ liệu
+    // Buổi 12: trang hiện tại, thay đổi khi bấm thanh phân trang
+    let page = 1;
+
+    // Tải lại bảng dữ liệu, gửi kèm từ khoá, bộ lọc, số dòng mỗi trang (#filterForm) và số trang
     window.reloadTable = function () {
         const $c = $('#tableContainer');
-        // Gửi kèm các ô lọc của #filterForm (nếu trang có), ví dụ lọc sinh viên theo khoa
-        return $.get($c.data('url'), $('#filterForm').serialize())
+        const query = $('#filterForm').serialize() + '&page=' + page;
+        return $.get($c.data('url'), query)
             .done(html => $c.html(html))
             .fail(xhr => $c.html($('<div class="alert alert-danger"></div>').text(errorMessage(xhr, 'Không tải được dữ liệu'))));
     };
@@ -99,8 +102,20 @@
             .always(() => { confirmModal.hide(); deleteUrl = null; });
     });
 
-    $('#filterForm').on('submit', e => { e.preventDefault(); reloadTable(); });
-    $('#filterForm select').on('change', () => reloadTable());
+    // Buổi 12: bấm số trang
+    $(document).on('click', '#tableContainer [data-page]', function (e) {
+        e.preventDefault();
+        if ($(this).closest('.page-item').is('.disabled, .active')) return;
+        page = Number($(this).data('page'));
+        reloadTable();
+    });
+
+    // Buổi 12: tìm kiếm / lọc thì quay về trang 1. Gõ xong 400ms thì tự tìm, không cần bấm nút
+    function search() { page = 1; reloadTable(); }
+    let timer;
+    $('#filterForm').on('submit', e => { e.preventDefault(); search(); });
+    $('#filterForm select').on('change', search);
+    $('#filterForm input[type=search]').on('input', () => { clearTimeout(timer); timer = setTimeout(search, 400); });
 
     if ($('#tableContainer').length) reloadTable();
 })(jQuery);

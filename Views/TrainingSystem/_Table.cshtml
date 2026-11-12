@@ -1,15 +1,15 @@
-@model IEnumerable<TrainingSystem>
+@model DemoMVC.Helpers.PagedList<TrainingSystem>
 @if (!Model.Any())
 {
-    <div class="alert alert-secondary">Chưa có hệ đào tạo nào.</div>
+    <div class="alert alert-secondary">@(string.IsNullOrEmpty(Model.Keyword) ? "Chưa có hệ đào tạo nào." : $"Không tìm thấy kết quả nào khớp với \"{Model.Keyword}\".")</div>
 }
 else
 {
     <table class="table table-hover align-middle">
         <thead class="table-light">
             <tr>
-                <th>@Html.DisplayNameFor(m => m.TrainingSystemCode)</th>
-                <th>@Html.DisplayNameFor(m => m.Name)</th>
+                <th>@Html.DisplayNameForInnerType((TrainingSystem m) => m.TrainingSystemCode)</th>
+                <th>@Html.DisplayNameForInnerType((TrainingSystem m) => m.Name)</th>
                 <th class="text-end">Số sinh viên</th>
                 <th></th>
             </tr>
@@ -30,3 +30,4 @@ else
         </tbody>
     </table>
 }
+<partial name="_Pager" model="Model" />

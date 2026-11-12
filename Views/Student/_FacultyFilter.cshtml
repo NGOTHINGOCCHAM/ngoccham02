@@ -1,0 +1,6 @@
+@* Lọc sinh viên theo khoa, nằm trong #filterForm của _CrudPage. Trang Chi tiết khoa mở /Student?facultyCode=CNTT *@
+<div class="col-sm-6 col-lg-3">
+    <select name="facultyCode" class="form-select" asp-items="ViewBag.Faculties" aria-label="Lọc theo khoa">
+        <option value="">-- Tất cả các khoa --</option>
+    </select>
+</div>
