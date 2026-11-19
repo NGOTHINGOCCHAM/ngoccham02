@@ -1,10 +1,12 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Models;
 
 namespace DemoMVC.Data;
 
-// DbContext: cầu nối giữa ứng dụng và cơ sở dữ liệu, mỗi DbSet ứng với một bảng
-public class ApplicationDbContext : DbContext
+// DbContext: cầu nối giữa ứng dụng và cơ sở dữ liệu, mỗi DbSet ứng với một bảng.
+// Buổi 13: kế thừa IdentityDbContext để có thêm các bảng AspNetUsers, AspNetRoles, AspNetUserRoles...
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

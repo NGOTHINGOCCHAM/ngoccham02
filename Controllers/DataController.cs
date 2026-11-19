@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoMVC.Controllers;
 
 // Gửi nhận dữ liệu giữa Controller và View KHÔNG dùng Model
+// Trang demo của các buổi trước, không cần đăng nhập
+[AllowAnonymous]
 public class DataController : Controller
 {
     // Controller -> View: gửi giá trị đơn giản qua ViewBag

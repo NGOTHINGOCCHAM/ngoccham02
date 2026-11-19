@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoMVC.Controllers;
@@ -5,6 +6,8 @@ namespace DemoMVC.Controllers;
 // Định tuyến theo quy ước (conventional routing), dùng route mặc định trong Program.cs:
 //   "{controller=Home}/{action=Index}/{id?}"
 // Ví dụ /Routing/Detail/5 -> controller = Routing, action = Detail, id = 5
+// Trang demo của các buổi trước, không cần đăng nhập
+[AllowAnonymous]
 public class RoutingController : Controller
 {
     // URL: /Routing hoặc /Routing/Index (Index là action mặc định)

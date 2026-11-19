@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,8 @@ using DemoMVC.Models;
 
 namespace DemoMVC.Controllers;
 
+// Các trang giới thiệu bài học, không cần đăng nhập
+[AllowAnonymous]
 public class HomeController : Controller
 {
     public IActionResult Index()

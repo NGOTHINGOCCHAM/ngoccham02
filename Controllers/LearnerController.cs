@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DemoMVC.Models;
 
 namespace DemoMVC.Controllers;
 
 // Gửi nhận dữ liệu giữa Controller và View thông qua Model (strongly-typed view)
+// Trang demo của các buổi trước, không cần đăng nhập
+[AllowAnonymous]
 public class LearnerController : Controller
 {
     // Dữ liệu mẫu lưu trong bộ nhớ, sẽ mất khi khởi động lại ứng dụng

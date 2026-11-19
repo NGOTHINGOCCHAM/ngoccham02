@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DemoMVC.Models;
 
@@ -8,6 +9,8 @@ namespace DemoMVC.Controllers;
 // Khi controller đã có [Route] thì route mặc định "{controller}/{action}/{id?}" không còn áp dụng,
 // nên /Catalog/Index sẽ trả về 404.
 [Route("san-pham")]
+// Trang demo của các buổi trước, không cần đăng nhập
+[AllowAnonymous]
 public class CatalogController : Controller
 {
     private static readonly List<CatalogItem> Items =

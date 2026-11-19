@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoMVC.Controllers;
 
 // Quản lý trạng thái: ViewData, ViewBag, TempData
+// Trang demo của các buổi trước, không cần đăng nhập
+[AllowAnonymous]
 public class StateController : Controller
 {
     public IActionResult Index()

@@ -34,16 +34,34 @@ jobs:
       - name: Publish
         run: dotnet publish --configuration Release --runtime win-x86 --self-contained false --output ./publish
 
-      # Repo để public nên không commit mật khẩu CSDL: tạo appsettings.Production.json từ secret DB_CONNECTION_STRING.
-      # Trên hosting app chạy ở môi trường Production nên file này ghi đè DefaultConnection trong appsettings.json
+      # Repo để public nên không commit mật khẩu: tạo appsettings.Production.json từ các secret.
+      # Trên hosting app chạy ở môi trường Production nên file này ghi đè các giá trị trong appsettings.json
+      #  - DB_CONNECTION_STRING: chuỗi kết nối CSDL
+      #  - ADMIN_PASSWORD (buổi 13): mật khẩu tài khoản admin mặc định, không khai báo thì không tạo tài khoản
+      #  - SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD (buổi 13): gửi email xác thực tài khoản / quên mật khẩu
       - name: Tạo appsettings.Production.json
         if: env.HAS_DB_CONNECTION == 'true'
         shell: pwsh
         env:
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         run: |
-          @{ ConnectionStrings = @{ DefaultConnection = $env:DB_CONNECTION_STRING } } |
-            ConvertTo-Json |
+          $settings = @{ ConnectionStrings = @{ DefaultConnection = $env:DB_CONNECTION_STRING } }
+          if ($env:ADMIN_PASSWORD) {
+            $settings.DefaultAccounts = @(@{ Password = $env:ADMIN_PASSWORD })
+          }
+          if ($env:SMTP_HOST) {
+            $settings.EmailSettings = @{
+              Host = $env:SMTP_HOST
+              UserName = $env:SMTP_USERNAME
+              Password = $env:SMTP_PASSWORD
+              FromEmail = $env:SMTP_USERNAME
+            }
+          }
+          $settings | ConvertTo-Json -Depth 5 |
             Set-Content -Path ./publish/appsettings.Production.json -Encoding utf8
 
       - name: Nhắc cấu hình secret CSDL

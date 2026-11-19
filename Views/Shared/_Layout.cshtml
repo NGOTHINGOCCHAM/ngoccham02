@@ -22,7 +22,7 @@
     <header>
         <nav class="navbar navbar-expand-lg bg-primary shadow-sm mb-4" data-bs-theme="dark">
             <div class="container">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">DemoMVC</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DemoMVC</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                         aria-controls="mainNav" aria-expanded="false" aria-label="Mở menu">
                     <span class="navbar-toggler-icon"></span>
@@ -30,24 +30,24 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link @Active("Home", "Index")" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                            <a class="nav-link @Active("Home", "Index")" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @Active("Home", "Environment")" asp-controller="Home" asp-action="Environment" title="Tìm hiểu về môi trường lập trình">Buổi 1</a>
+                            <a class="nav-link @Active("Home", "Environment")" asp-area="" asp-controller="Home" asp-action="Environment" title="Tìm hiểu về môi trường lập trình">Buổi 1</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @Active("Home", "CiCd")" asp-controller="Home" asp-action="CiCd" title="Tìm hiểu về CI/CD">Buổi 2</a>
+                            <a class="nav-link @Active("Home", "CiCd")" asp-area="" asp-controller="Home" asp-action="CiCd" title="Tìm hiểu về CI/CD">Buổi 2</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @Active("Home", "Architecture")" asp-controller="Home" asp-action="Architecture" title="Tìm hiểu về kiến trúc .NET MVC">Buổi 3</a>
+                            <a class="nav-link @Active("Home", "Architecture")" asp-area="" asp-controller="Home" asp-action="Architecture" title="Tìm hiểu về kiến trúc .NET MVC">Buổi 3</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle @Active("Routing")@Active("Catalog")" href="#" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">Buổi 4</a>
                             <ul class="dropdown-menu">
                                 <li><h6 class="dropdown-header">Định tuyến trong .NET MVC</h6></li>
-                                <li><a class="dropdown-item" asp-controller="Routing" asp-action="Index">Cấu trúc URL và lỗi</a></li>
-                                <li><a class="dropdown-item" asp-controller="Catalog" asp-action="Index">Định tuyến với [Route]</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Routing" asp-action="Index">Cấu trúc URL và lỗi</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Catalog" asp-action="Index">Định tuyến với [Route]</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -55,26 +55,26 @@
                                data-bs-toggle="dropdown" aria-expanded="false">Buổi 5</a>
                             <ul class="dropdown-menu">
                                 <li><h6 class="dropdown-header">Gửi nhận dữ liệu giữa M-V-C</h6></li>
-                                <li><a class="dropdown-item" asp-controller="Data" asp-action="Index">Controller ↔ View</a></li>
-                                <li><a class="dropdown-item" asp-controller="Learner" asp-action="Index">Thông qua Model</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Data" asp-action="Index">Controller ↔ View</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Learner" asp-action="Index">Thông qua Model</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @Active("State")" asp-controller="State" asp-action="Index" title="Tìm hiểu về quản lý trạng thái">Buổi 6</a>
+                            <a class="nav-link @Active("State")" asp-area="" asp-controller="State" asp-action="Index" title="Tìm hiểu về quản lý trạng thái">Buổi 6</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @Active("Home", "LayoutDemo")" asp-controller="Home" asp-action="LayoutDemo" title="Tìm hiểu về Layout">Buổi 7</a>
+                            <a class="nav-link @Active("Home", "LayoutDemo")" asp-area="" asp-controller="Home" asp-action="LayoutDemo" title="Tìm hiểu về Layout">Buổi 7</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @Active("Home", "Database")" asp-controller="Home" asp-action="Database" title="Kết nối cơ sở dữ liệu">Buổi 8</a>
+                            <a class="nav-link @Active("Home", "Database")" asp-area="" asp-controller="Home" asp-action="Database" title="Kết nối cơ sở dữ liệu">Buổi 8</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle @Active("Product")@Active("Home", "DatabaseHosting")" href="#" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">Buổi 9</a>
                             <ul class="dropdown-menu">
                                 <li><h6 class="dropdown-header">CRUD, Validation và CSDL trên hosting</h6></li>
-                                <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
-                                <li><a class="dropdown-item" asp-controller="Home" asp-action="DatabaseHosting">CSDL trên hosting</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="DatabaseHosting">CSDL trên hosting</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -82,10 +82,10 @@
                                data-bs-toggle="dropdown" aria-expanded="false">Buổi 10</a>
                             <ul class="dropdown-menu">
                                 <li><h6 class="dropdown-header">CRUD với khoá ngoại, sinh mã tự động</h6></li>
-                                <li><a class="dropdown-item" asp-controller="Student" asp-action="Index">Sinh viên</a></li>
-                                <li><a class="dropdown-item" asp-controller="Faculty" asp-action="Index">Khoa</a></li>
-                                <li><a class="dropdown-item" asp-controller="Major" asp-action="Index">Ngành</a></li>
-                                <li><a class="dropdown-item" asp-controller="TrainingSystem" asp-action="Index">Hệ đào tạo</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Student" asp-action="Index">Sinh viên</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Faculty" asp-action="Index">Khoa</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Major" asp-action="Index">Ngành</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="TrainingSystem" asp-action="Index">Hệ đào tạo</a></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -93,14 +93,29 @@
                                data-bs-toggle="dropdown" aria-expanded="false">Buổi 11</a>
                             <ul class="dropdown-menu">
                                 <li><h6 class="dropdown-header">CRUD bằng Modal + Ajax</h6></li>
-                                <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
-                                <li><a class="dropdown-item" asp-controller="Student" asp-action="Index">Sinh viên</a></li>
-                                <li><a class="dropdown-item" asp-controller="Faculty" asp-action="Index">Khoa</a></li>
-                                <li><a class="dropdown-item" asp-controller="Major" asp-action="Index">Ngành</a></li>
-                                <li><a class="dropdown-item" asp-controller="TrainingSystem" asp-action="Index">Hệ đào tạo</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Student" asp-action="Index">Sinh viên</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Faculty" asp-action="Index">Khoa</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Major" asp-action="Index">Ngành</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="TrainingSystem" asp-action="Index">Hệ đào tạo</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">Buổi 12-13</a>
+                            <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">Buổi 12: Phân trang và tìm kiếm</h6></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Student" asp-action="Index">Sinh viên</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><h6 class="dropdown-header">Buổi 13: Xác thực người dùng (Identity)</h6></li>
+                                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Đăng ký (gửi email xác thực)</a></li>
+                                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">Đăng nhập</a></li>
+                                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/ForgotPassword">Quên mật khẩu</a></li>
+                                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Tài khoản của tôi</a></li>
                             </ul>
                         </li>
                     </ul>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -114,7 +129,7 @@
 
     <footer class="footer border-top text-muted">
         <div class="container">
-            &copy; 2026 - DemoMVC - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - DemoMVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     @* Buổi 11: modal, thông báo và token dùng chung cho CRUD bằng Ajax *@

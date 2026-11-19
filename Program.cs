@@ -1,11 +1,20 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Data;
+using DemoMVC.Models;
+using DemoMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(options =>
 {
+    // Buổi 13: mọi trang đều phải đăng nhập, trừ controller / action có [AllowAnonymous]
+    options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build()));
+
     // Thông báo bằng tiếng Việt khi nhập sai kiểu dữ liệu, ví dụ nhập chữ vào ô Giá
     options.ModelBindingMessageProvider.SetValueMustBeANumberAccessor(field => $"{field} phải là một số");
     options.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((value, field) => $"Giá trị '{value}' không hợp lệ cho {field}");
@@ -14,6 +23,23 @@ builder.Services.AddControllersWithViews(options =>
 // Đăng ký DbContext dùng SQL Server với chuỗi kết nối "DefaultConnection" trong appsettings.json
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Buổi 13: tích hợp Identity với giao diện có sẵn (Razor Pages trong /Identity/Account/...)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true; // phải bấm link trong email xác thực mới đăng nhập được
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+    })
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddRazorPages();
+
+// Buổi 13: gửi email (xác thực tài khoản, quên mật khẩu) qua SMTP cấu hình ở mục "EmailSettings"
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
 
 var app = builder.Build();
 
@@ -26,6 +52,8 @@ using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         db.Database.Migrate();
+        // Buổi 13: tạo role và tài khoản mặc định
+        await IdentitySeeder.SeedAsync(scope.ServiceProvider, app.Configuration, app.Logger);
     }
     catch (Exception ex)
     {
@@ -51,6 +79,7 @@ app.UseRequestLocalization("en-US");
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -58,6 +87,10 @@ app.MapStaticAssets();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
+// Buổi 13: các trang của Identity (đăng nhập, đăng ký, quên mật khẩu...)
+app.MapRazorPages()
     .WithStaticAssets();
 
 
